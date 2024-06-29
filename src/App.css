@@ -1,0 +1,16 @@
+*{
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+}
+.active.navlink::before{
+    @apply w-full
+}
+.navlink{
+    @apply relative text-sm font-bold before:w-0
+}
+.navlink::before{
+    @apply content-[''] absolute left-0 w-0 h-[2px] -bottom-2 bg-orange-500 duration-300
+}
+.navlink:hover::before{
+    @apply w-full
+}
