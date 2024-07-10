@@ -14,3 +14,19 @@
 .navlink:hover::before{
     @apply w-full
 }
+.child{
+    @apply w-[40px] h-[40px] rounded bg-orange-400/20 absolute;
+    animation: upDown 20s linear forwards;
+}
+
+@keyframes upDown {
+    from{
+        transform: rotate(0deg);
+        bottom: -100px;
+    }   
+    to{
+        transform: rotate(360deg) ;
+        bottom: 100%;
+
+    }
+}
