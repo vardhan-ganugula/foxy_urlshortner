@@ -1,0 +1,81 @@
+const shortid = require("shortid");
+const URL = require("../models/shortUrl");
+
+async function handleCreateURL(req, res) {
+  const body = req.body;
+  let shortId;
+  if (body.shortCode) {
+    shortId = body.shortCode;
+  } else {
+    shortId = shortid.generate();
+  }
+  if (!body.url || !body.domain) {
+    return res.json({
+      status: false,
+    });
+  }
+  const redirectUrl = body.url;
+
+  try {
+    await URL.create({
+      shortId,
+      redirectUrl,
+      url: body.domain + "/" + shortId,
+      domain: body.domain,
+      viewHistory: [],
+    });
+    return res.json({
+      status: true,
+      shortId,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.json({
+      status: false,
+    });
+  }
+}
+
+async function handleUrlForward(req, res) {
+  const id = req.params.id;
+  const ip =
+    req.ip || req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+  const device = req.useragent.platform;
+  try {
+   
+    const response = await URL.findOneAndUpdate(
+      { url: req.headers.host + "/" + id },
+      {
+        $push: {
+          viewHistory: {
+            date: Date.now(),
+            ip,
+            device: device,
+          },
+        },
+      }
+    );
+
+    res.redirect(response.redirectUrl);
+  } catch (e) {
+    console.log(e);
+    res.status(404).json({
+      status: "error",
+      data: e.toString(),
+    });
+  }
+}
+
+async function handleAnalytics(req, res) {
+  const id = req.params.id;
+  const result = await URL.findOne({ shortId: id });
+  res.json({
+    result: result.viewHistory,
+  });
+}
+
+module.exports = {
+  handleCreateURL,
+  handleUrlForward,
+  handleAnalytics,
+};

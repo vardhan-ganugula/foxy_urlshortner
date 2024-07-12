@@ -1,40 +1,30 @@
 const express = require('express');
 const app = express();
+const dotenv = require('dotenv');
+const urlForward = require('./routes/urlForward')
+const dashboardRouter = require('./routes/dashboard')
+const mongoConnection = require('./connection');
+const useragent = require('express-useragent');
+dotenv.config();
 
-// Middleware to log request details
-app.use((req, res, next) => {
-  console.log(`Client IP Address: ${req.ip}`);
-  
+// middlewares
+app.use(express.json());
+app.use(express.urlencoded({extended: true}))
+app.use(useragent.express());
 
-  const userAgent = req.headers['user-agent'];
+// database connection
 
-  
-  // Determine the operating system based on user-agent
-  let operatingSystem;
-  if (/android/i.test(userAgent)) {
-    operatingSystem = 'Android';
-  } else if (/linux/i.test(userAgent)) {
-    operatingSystem = 'Linux';
-  } else if (/windows/i.test(userAgent)) {
-    operatingSystem = 'Windows';
-  } else if (/mac/i.test(userAgent)) {
-    operatingSystem = 'macOS';
-  } else {
-    operatingSystem = 'Unknown';
-  }
-  
-  console.log(`Operating System: ${operatingSystem}`);
-  
-  next();
+mongoConnection(process.env.MONGO_URL).then(e=>{
+  console.log('connection success')
+}).catch(err=>{
+  console.log('connection failed ' + err)
 });
 
-// Your routes here
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+// urls 
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.use('/dashboard/', dashboardRouter);
+app.use('/', urlForward);
+
+app.listen(process.env.PORT || 3000, ()=>{
+  console.log(`server is running at http://localhost:${process.env.PORT || 3000}`)
+})
