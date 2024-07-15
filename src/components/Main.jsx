@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { IoIosClose, IoMdLock } from "react-icons/io";
+import { IoMdLock } from "react-icons/io";
 import { IoCopyOutline } from "react-icons/io5";
-import { FaCopy, FaLink } from "react-icons/fa6";
+import { FaLink } from "react-icons/fa6";
 import { FaTools } from "react-icons/fa";
-import { TiTick } from "react-icons/ti";
+
+import Alert from "./Alert";
 
 function Main() {
   const [url, setUrl] = useState("");
   const [alias, setAlias] = useState("");
   const [shortUrl, setShortUrl] = useState("");
-  const [showAlert, setAlert] = useState(false);
-  console.log("hi");
+  const [domain, setDomain] = useState("coderealm.tech");
+  const [alert, setAlert] = useState({ type: "", data: "", visible: false });
   useEffect(() => {
     let parentDiv = document.querySelector("#parentDiv");
 
@@ -30,30 +31,59 @@ function Main() {
     return () => clearInterval(interval);
   }, []);
 
+
+  async function handelSubmit(e) {
+    e.preventDefault();
+    
+    const urlPattern =
+      /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i;
+    if (urlPattern.test(url)) {
+      try {
+        console.log("enterd");
+        const response = await fetch(import.meta.env.VITE_SERVER + '/create', {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            url: url,
+            domain,
+            shortCode: alias,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log(data.status)
+        
+        if(data.status == true){
+          if(alert.visible)
+            document.querySelector('#alertDiv').style.display = 'flex'
+          setAlert({ type: "success", visible: true })
+          setShortUrl(data.url)
+        }
+        else{
+          if(alert.visible)
+            document.querySelector('#alertDiv').style.display = 'flex'
+          setAlert({ type: "error", visible: true , data : "try another alias word"})
+
+        }
+      } catch (e) {
+        console.log(e);
+        
+      }
+    }
+
+  
+  }
+
   return (
     <main>
-      {showAlert && `<div className="fixed w-[400px] min-h-[200px] bg-white rounded z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-5 flex justify-center items-center flex-col shadow-2xl">
-        <div className="text-2xl absolute top-2 right-2 cursor-pointer">
-          <IoIosClose size={30} />
-        </div>
-        <div className="text-green-500 p-4 bg-green-200 rounded-full mt-2">
-          <TiTick size={50} />
-        </div>
-        <div className="mt-4">
-          <h4>Success</h4>
-        </div>
-        <div className="flex mt-4 bg-sky-100 w-3/4 p-3 rounded-lg relative">
-          <input
-            type="text"
-            className="w-full bg-transparent outline-none pointer-events-none text-xs text-sky-800"
-            value={"this is text"}
-          />
-          <div className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-sky-500">
-            <FaCopy size={25} />
-          </div>
-        </div>
-      </div>`}
-      <section className="w-full h-[85vh] p-2 flex flex-col items-center bg-slate-50 relative">
+      {alert.visible && <Alert type={alert.type} data={alert.data} />}
+      <section className="w-full h-[100vh] p-2 flex flex-col items-center bg-slate-50 relative">
         <div
           className="absolute z-0 w-full h-full p-5 overflow-hidden "
           id="parentDiv"
@@ -84,7 +114,12 @@ function Main() {
                 </div>
               </div>
               <div className="bg-white w-full md:w-[500px] md:py-5 rounded-md md:px-5 shadow-md p-2">
-                <form action="#" autoComplete="off" className="w-full">
+                <form
+                  action="#"
+                  autoComplete="off"
+                  className="w-full"
+                  onSubmit={handelSubmit}
+                >
                   <div className="md:px-5 px-3 font-bold">
                     <label htmlFor="url" className="text-sm font-bold">
                       Paste a long URL
@@ -110,7 +145,7 @@ function Main() {
                         type="text"
                         id="domain"
                         disabled
-                        value="coderealm.tech"
+                        value={domain}
                         className="cursor-not-allowed bg-slate-100 font-mono text-slate-800 p-3 rounded-lg "
                         unselectable="on"
                       />
@@ -160,7 +195,9 @@ function Main() {
                         id="shorturl"
                         className="border-2 border-orange-300 w-full py-2 px-3 rounded-md font-mono test-sm tracking-tight"
                       />
-                      <div className="absolute top-1/2 right-2 font-bold -translate-y-1/2 cursor-pointer text-orange-400">
+                      <div className="absolute top-1/2 right-2 font-bold -translate-y-1/2 cursor-pointer text-orange-400" onClick={()=> {
+                        navigator.clipboard.writeText(shortUrl)
+                      }}>
                         <IoCopyOutline size={25} />
                       </div>
                     </div>

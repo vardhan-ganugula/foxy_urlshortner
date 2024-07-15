@@ -26,7 +26,7 @@ function Header() {
     document.querySelector('#closeParent').style.display = 'none';
   }
   return (
-    <header className='bg-white w-full py-1  px-5'>
+    <header className='bg-white w-full py-1  px-5 border-b-2'>
       <div className='w-full py-2 flex justify-center border-b-2 text-xs relative' id='closeParent'>
         <div className="absolute right-2 top-0 py-1 px-2 cursor-pointer" onClick={ (e)=> closeParent()}>
           <IoIosClose size={25}/>
@@ -82,8 +82,8 @@ function Header() {
         </div>
 
         <div className='gap-3 hidden lg:flex'>
-          <Link to='/' className='px-3 py-[8px] text-xs font-semibold border-[2px] border-orange-500 rounded-lg bg-orange-100/30 text-orange-500 hover:bg-orange-500 hover:text-white transition-all'>Login</Link>
-          <Link to='/' className='px-3 py-[8px] text-xs font-semibold border-[2px] border-orange-500 rounded-lg bg-orange-500 text-white hover:bg-orange-100/30 hover:text-orange-500 transition-all'>Sign up</Link>
+          <Link to='/login' className='px-3 py-[8px] text-xs font-semibold border-[2px] border-orange-500 rounded-lg bg-orange-100/30 text-orange-500 hover:bg-orange-500 hover:text-white transition-all'>Login</Link>
+          <Link to='/signup' className='px-3 py-[8px] text-xs font-semibold border-[2px] border-orange-500 rounded-lg bg-orange-500 text-white hover:bg-orange-100/30 hover:text-orange-500 transition-all'>Sign up</Link>
         </div>
       </nav>
 

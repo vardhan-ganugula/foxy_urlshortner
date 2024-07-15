@@ -7,7 +7,10 @@ async function handleCreateURL(req, res) {
   if (body.shortCode) {
     shortId = body.shortCode;
   } else {
-    shortId = shortid.generate();
+    shortId = shortid.generate({
+      length: 6, // Length of the ID
+      charset: "alphabetic",
+    });
   }
   if (!body.url || !body.domain) {
     return res.json({
@@ -27,9 +30,10 @@ async function handleCreateURL(req, res) {
     return res.json({
       status: true,
       shortId,
+      url:  body.domain + "/" + shortId
     });
   } catch (e) {
-    console.log(e);
+    console.log('duplicated')
     return res.json({
       status: false,
     });
@@ -42,7 +46,6 @@ async function handleUrlForward(req, res) {
     req.ip || req.headers["x-forwarded-for"] || req.connection.remoteAddress;
   const device = req.useragent.platform;
   try {
-   
     const response = await URL.findOneAndUpdate(
       { url: req.headers.host + "/" + id },
       {
@@ -67,10 +70,12 @@ async function handleUrlForward(req, res) {
 }
 
 async function handleAnalytics(req, res) {
-  const id = req.params.id;
-  const result = await URL.findOne({ shortId: id });
+  const shortId = req.body.id;
+  const domain = req.body.domain;
+  console.log(shortId, domain);
+  const result = await URL.findOne({ shortId, domain });
   res.json({
-    result: result.viewHistory,
+    result,
   });
 }
 

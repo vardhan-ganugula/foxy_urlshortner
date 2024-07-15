@@ -6,8 +6,9 @@ const dashboardRouter = require('./routes/dashboard')
 const mongoConnection = require('./connection');
 const useragent = require('express-useragent');
 dotenv.config();
-
+const cors = require('cors');
 // middlewares
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 app.use(useragent.express());
