@@ -10,7 +10,7 @@ function Main() {
   const [url, setUrl] = useState("");
   const [alias, setAlias] = useState("");
   const [shortUrl, setShortUrl] = useState("");
-  const [domain, setDomain] = useState("coderealm.tech");
+  const [domain, setDomain] = useState("foxyurl.vercel.app");
   const [alert, setAlert] = useState({ type: "", data: "", visible: false });
   useEffect(() => {
     let parentDiv = document.querySelector("#parentDiv");
