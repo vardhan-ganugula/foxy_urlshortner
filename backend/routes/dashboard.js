@@ -13,7 +13,12 @@ dashboardRouter.post('/reset-password/:id', handleResetPassword)
 
 dashboardRouter.get('/', validateUser,(req, res)=>{
     res.send('working')
+});
+
+dashboardRouter.get('/test',(req, res)=>{
+    res.send('working')
 })
+
 dashboardRouter.post('/analytics/:id', handleAnalytics)
 
 
