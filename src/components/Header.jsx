@@ -28,10 +28,10 @@ function Header() {
   return (
     <header className='bg-white w-full py-1  px-5 border-b-2'>
       <div className='w-full py-2 flex justify-center border-b-2 text-xs relative' id='closeParent'>
-        <div className="absolute right-[-15px] md:right-2 top-0 py-1 px-2 cursor-pointer" onClick={ (e)=> closeParent()}>
+        <div className="absolute right-0 top-1 md:top-0 md:right-2 py-1 px-2 cursor-pointer" onClick={ (e)=> closeParent()}>
           <IoIosClose size={25}/>
         </div>
-          <div>
+          <div className='px-1'>
             <h6>Create a free acount and enjoy extra features -  <strong> <span className='text-indigo-600'> ip tracing </span>, <span className='text-orange-500'>custom domain</span></strong> </h6>
           </div>
       </div>
