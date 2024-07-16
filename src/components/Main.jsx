@@ -83,7 +83,7 @@ function Main() {
   return (
     <main>
       {alert.visible && <Alert type={alert.type} data={alert.data} />}
-      <section className="w-full h-[100vh] p-2 flex flex-col items-center bg-slate-50 relative">
+      <section className="w-full h-[80vh] md:h-[100vh] p-2 flex flex-col items-center bg-slate-50 relative">
         <div
           className="absolute z-0 w-full h-full p-5 overflow-hidden "
           id="parentDiv"

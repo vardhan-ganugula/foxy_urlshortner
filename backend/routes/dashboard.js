@@ -15,9 +15,13 @@ dashboardRouter.get('/', validateUser,(req, res)=>{
     res.send('working')
 });
 
-dashboardRouter.get('/test',(req, res)=>{
+dashboardRouter.get('/test',validateUser,(req, res)=>{
     res.send('working')
 })
+dashboardRouter.get('/test-method',(req, res)=>{
+    res.send('working')
+})
+
 
 dashboardRouter.post('/analytics/:id', handleAnalytics)
 

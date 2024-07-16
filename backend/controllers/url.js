@@ -30,10 +30,10 @@ async function handleCreateURL(req, res) {
     return res.json({
       status: true,
       shortId,
-      url:  body.domain + "/" + shortId
+      url: body.domain + "/" + shortId,
     });
   } catch (e) {
-    console.log('duplicated')
+    console.log("duplicated");
     return res.json({
       status: false,
     });
@@ -42,8 +42,10 @@ async function handleCreateURL(req, res) {
 
 async function handleUrlForward(req, res) {
   const id = req.params.id;
-  const ip =
-    req.ip || req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+  const xForwardedFor = req.headers["x-forwarded-for"];
+  const ip = xForwardedFor
+    ? xForwardedFor.split(",")[0]
+    : req.connection.remoteAddress;
   const device = req.useragent.platform;
   try {
     const response = await URL.findOneAndUpdate(

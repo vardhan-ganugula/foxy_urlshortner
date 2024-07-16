@@ -28,7 +28,7 @@ function Header() {
   return (
     <header className='bg-white w-full py-1  px-5 border-b-2'>
       <div className='w-full py-2 flex justify-center border-b-2 text-xs relative' id='closeParent'>
-        <div className="absolute right-2 top-0 py-1 px-2 cursor-pointer" onClick={ (e)=> closeParent()}>
+        <div className="absolute right-[-15px] md:right-2 top-0 py-1 px-2 cursor-pointer" onClick={ (e)=> closeParent()}>
           <IoIosClose size={25}/>
         </div>
           <div>

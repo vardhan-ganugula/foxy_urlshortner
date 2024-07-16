@@ -135,6 +135,7 @@ async function handleResetPassword(req, res) {
     })
   } catch (e) {
     console.log(e);
+    console.log('error')
     return res.json({
       status: "failed",
       msg: "token error",
