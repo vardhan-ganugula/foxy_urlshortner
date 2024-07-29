@@ -37,6 +37,11 @@ let urlSchema = mongoose.Schema(
       required: true
     },
     viewHistory: [ historySchema ],
+    createdBy : {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : 'users',
+      default : '669b6a5bf4ee76c4f6573efe'
+    }
   },
   { timestamps: true }
 );

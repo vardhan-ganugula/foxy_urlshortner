@@ -18,6 +18,39 @@
     @apply w-[40px] h-[40px] rounded bg-orange-400/20 absolute;
     animation: upDown 20s linear forwards;
 }
+.sidebar_item a{
+    position: relative;
+    overflow: hidden;
+}
+.sidebar_item a::before{
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 100px;
+    transform: rotate(20deg);
+    background-color: white;
+    z-index: 5;
+    top: -10px;
+    left: -50px;
+    opacity: .2;
+    transition: all 0.7s ease;
+}
+.sidebar_item:hover a::before{
+    left: 100%;
+}
+.sidebar_item .active{
+    position: relative;
+    z-index: 2;
+}
+.sidebar_item .active::after{
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 8px;
+    left: 0;
+    top: 0;
+    background-color: #fff;
+}
 
 @keyframes upDown {
     from{

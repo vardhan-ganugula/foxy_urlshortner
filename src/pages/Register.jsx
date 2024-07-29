@@ -4,6 +4,20 @@ import { MdError } from "react-icons/md";
 import Alert from "../components/Alert";
 
 function SignUp() {
+  const navlinks = [
+    {
+      'name': "Home",
+      'link': "/"
+    },
+    {
+      'name': "About",
+      'link': "/about"
+    },
+    {
+      'name': "Signup",
+      'link': "/signup"
+    }
+  ]
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   let [cpassword, setCpassword] = useState("");
@@ -71,7 +85,7 @@ function SignUp() {
       setAlert({ type: "failed", data: "enter all the fields", visible: true });
       return;
     }
-    fetch(import.meta.env.VITE_SERVER + "/dashboard/create", {
+    fetch(import.meta.env.VITE_SERVER + "/auth/create", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -105,7 +119,7 @@ function SignUp() {
 
   return (
     <>
-      <Header />
+      <Header navlinks={navlinks} />
       <main className="w-full h-[85vh] flex items-center justify-center">
         {alert.visible && <Alert type={alert.type} data={alert.data} />}
         <div className=" w-[400px] rounded shadow-lg overflow-hidden ">

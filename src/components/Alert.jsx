@@ -5,8 +5,7 @@ import { TiTick } from "react-icons/ti";
 
 function Alert(props) {
     const alertInfo = props;
-
-
+    
   return (
     <div className="fixed w-[400px] min-h-[200px] bg-white rounded z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-5 flex justify-center items-center flex-col shadow-2xl" id="alertDiv">
       <div className="text-2xl absolute top-2 right-2 cursor-pointer" onClick={ ()=> document.querySelector('#alertDiv').style.display = 'none'} >

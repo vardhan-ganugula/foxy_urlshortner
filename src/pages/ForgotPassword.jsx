@@ -3,6 +3,20 @@ import Header from "../components/Header";
 import { MdError } from "react-icons/md";
 import Alert from "../components/Alert";
 function ForgotPassword() {
+  const navlinks = [
+    {
+      'name': "Home",
+      'link': "/"
+    },
+    {
+      'name': "About",
+      'link': "/about"
+    },
+    {
+      'name': "Signup",
+      'link': "/signup"
+    }
+  ]
   let [email, setEmail] = useState("");
   let [proceed, isProceed] = useState(false);
   let [alert, setAlert] = useState({ type: "", data: "", visible: false });
@@ -30,7 +44,7 @@ function ForgotPassword() {
         type: "error",
       });
     }
-    fetch(import.meta.env.VITE_SERVER + "/dashboard/forgot-password", {
+    fetch(import.meta.env.VITE_SERVER + "/auth/forgot-password", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -63,7 +77,7 @@ function ForgotPassword() {
   }
   return (
     <>
-      <Header />
+      <Header navlinks={navlinks} />
       <main className="w-full h-[85vh] flex items-center justify-center">
         {alert.visible && <Alert type={alert.type} data={alert.data} />}
 

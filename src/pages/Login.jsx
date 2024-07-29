@@ -8,7 +8,20 @@ import { useNavigate } from "react-router-dom";
 
 
 function Login() {
-
+  const navlinks = [
+    {
+      'name': "Home",
+      'link': "/"
+    },
+    {
+      'name': "About",
+      'link': "/about"
+    },
+    {
+      'name': "Signup",
+      'link': "/signup"
+    }
+  ]
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   let [alert, setAlert] = useState({ type: "", data: "", visible: false });
@@ -50,7 +63,7 @@ function Login() {
       setAlert({ visible: true, data: "fill all the fileds", type: "error" });
       return;
     } else {
-      fetch(import.meta.env.VITE_SERVER + "/dashboard/login", {
+      fetch(import.meta.env.VITE_SERVER + "/auth/login", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -92,7 +105,7 @@ function Login() {
 
   return (
     <>
-      <Header />
+      <Header navlinks={navlinks} />
       <main className="w-full h-[85vh] flex items-center justify-center">
         {alert.visible && <Alert type={alert.type} data={alert.data} />}
 

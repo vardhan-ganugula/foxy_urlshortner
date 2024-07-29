@@ -6,35 +6,22 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { IoIosClose } from 'react-icons/io';
 
 
-function Header() {
+function Header({hideAlert = false, navlinks, hideLogins = false}) {
   const [isMobileClose, setMobileNavigation] = useState(true);
-  const navlinks = [
-    {
-      'name': "Home",
-      'link': "/"
-    },
-    {
-      'name': "About",
-      'link': "/about"
-    },
-    {
-      'name': "Signup",
-      'link': "/signup"
-    }
-  ]
+  
   function closeParent(){
     document.querySelector('#closeParent').style.display = 'none';
   }
   return (
     <header className='bg-white w-full py-1  px-5 border-b-2'>
-      <div className='w-full py-2 flex justify-center border-b-2 text-xs relative' id='closeParent'>
+      { !hideAlert && <div className='w-full py-2 flex justify-center border-b-2 text-xs relative' id='closeParent'>
         <div className="absolute right-0 top-1 md:top-0 md:right-2 py-1 px-2 cursor-pointer" onClick={ (e)=> closeParent()}>
           <IoIosClose size={25}/>
         </div>
           <div className='px-1'>
             <h6>Create a free acount and enjoy extra features -  <strong> <span className='text-indigo-600'> ip tracing </span>, <span className='text-orange-500'>custom domain</span></strong> </h6>
           </div>
-      </div>
+      </div>}
       <nav className='flex justify-between items-center'>
 
         <a href="#" className='w-[60px] h-[60px] flex gap-1 items-center font-bold'> <img src={logo} alt="logo" /> FoxyURL </a>
@@ -81,10 +68,10 @@ function Header() {
           { isMobileClose? <RxHamburgerMenu/> : <IoCloseSharp/>}
         </div>
 
-        <div className='gap-3 hidden lg:flex'>
+        {!hideLogins && <div className='gap-3 hidden lg:flex'>
           <Link to='/login' className='px-3 py-[8px] text-xs font-semibold border-[2px] border-orange-500 rounded-lg bg-orange-100/30 text-orange-500 hover:bg-orange-500 hover:text-white transition-all'>Login</Link>
           <Link to='/signup' className='px-3 py-[8px] text-xs font-semibold border-[2px] border-orange-500 rounded-lg bg-orange-500 text-white hover:bg-orange-100/30 hover:text-orange-500 transition-all'>Sign up</Link>
-        </div>
+        </div>}
       </nav>
 
     </header>

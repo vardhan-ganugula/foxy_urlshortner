@@ -1,11 +1,17 @@
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
+dotenv.config();
+
+//  custom routers
 const urlForward = require('./routes/urlForward')
 const dashboardRouter = require('./routes/dashboard')
+const authRouter = require('./routes/auth')
+
+
 const mongoConnection = require('./connection');
 const useragent = require('express-useragent');
-dotenv.config();
+
 const cors = require('cors');
 // middlewares
 app.use(cors())
@@ -24,6 +30,7 @@ mongoConnection(process.env.MONGO_URL).then(e=>{
 // urls 
 
 app.use('/dashboard/', dashboardRouter);
+app.use('/auth/', authRouter);
 app.use('/', urlForward);
 
 app.listen(process.env.PORT || 3000, ()=>{

@@ -2,6 +2,20 @@ import React, { useState } from "react";
 import { MdError } from "react-icons/md";
 import { useParams } from "react-router-dom";
 function ResetPassword() {
+  const navlinks = [
+    {
+      'name': "Home",
+      'link': "/"
+    },
+    {
+      'name': "About",
+      'link': "/about"
+    },
+    {
+      'name': "Signup",
+      'link': "/signup"
+    }
+  ]
   let [password, setPassword] = useState("");
   let [cpassword, setCpassword] = useState("");
   let { id } = useParams();
@@ -37,7 +51,7 @@ function ResetPassword() {
     e.preventDefault();
 
     if (proceed && password && cpassword) {
-      fetch(import.meta.env.VITE_SERVER + "/dashboard/reset-password/" + id, {
+      fetch(import.meta.env.VITE_SERVER + "/auth/reset-password/" + id, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
