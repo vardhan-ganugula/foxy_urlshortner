@@ -5,35 +5,23 @@ import { BiHomeAlt } from "react-icons/bi";
 import { FaGlobeAfrica } from "react-icons/fa";
 import { IoIosLink } from "react-icons/io";
 import { NavLink } from 'react-router-dom';
+import {useSidebar} from '../contexts/SidebarContext';
+
+
 
 function Sidebar() {
-  const [sidebarStatus, setSidebarStatus] = useState(window.innerWidth < 700 ? false : true);
-  
-  useEffect(() => {
-    
-    if (!sidebarStatus) {
-      document.querySelectorAll(".sidebar_item").forEach((item) => {
-        item.querySelector("span").style.display = "none";
-      });
-    } else {
-      document.querySelectorAll(".sidebar_item").forEach((item) => {
-        setTimeout( ()=> {
-          item.querySelector("span").style.display = "block";
-        }, 200)
-      });
-    }
-  }, [sidebarStatus]);
-  
+  let {sidebarStatus, setSidebarStatus } = useSidebar();
   return (
-    <>
-        <div className={`bg-zinc-900 ${ sidebarStatus ? 'w-[250px]' : 'w-[80px]' } p-1 transition-all duration-500`}>
-          <div className="flex justify-between items-center mb-5">
-            <img src={Logo} className="w-11 h-14" />
-            <div
-              className="cursor-pointer text-zinc-500"
-              onClick={() => setSidebarStatus((status) => !status)}
-            >
-              <HiMiniBars3BottomRight size={25} />
+    
+      <>
+        <div className={`bg-zinc-900 h-screen z-30 ${ sidebarStatus ? 'md:w-[250px] w-full fixed md:static md:translate-x-0' : 'w-full fixed top-0 left-0 h-full bg-zinc-800/80  -translate-x-[100%]' } p-1 transition-all duration-500`}>
+          <div className="flex gap-3 font-bold text-white justify-between items-center mb-5">
+            <div className='flex gap-2 items-center'>
+              <img src={Logo} className="w-11 h-14 ml-5" />
+              FoxyURL
+            </div>
+            <div className='mx-3 md:hidden' onClick={() => setSidebarStatus(prev => !prev)}>
+              <HiMiniBars3BottomRight size={25}/>
             </div>
           </div>
           <div className="w-full p-2 flex flex-col gap-2 text-sm">
@@ -64,6 +52,7 @@ function Sidebar() {
           </div>
         </div>
     </>
+
   )
 }
 
