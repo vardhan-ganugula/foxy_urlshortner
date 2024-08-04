@@ -76,6 +76,9 @@ async function getAllUrls(req,res){
         domain : {
           $first : "$domain"
         },
+        url : {
+          $first : "$url"
+        },
         totalClicks : {
           $sum : 1
         }
