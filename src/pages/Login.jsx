@@ -3,25 +3,11 @@ import Header from "../components/Header";
 import { MdError } from "react-icons/md";
 import Alert from "../components/Alert";
 import Cookies from "universal-cookie";
-import { useNavigate } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { navlinks } from "../../utils";
 
 
 function Login() {
-  const navlinks = [
-    {
-      'name': "Home",
-      'link': "/"
-    },
-    {
-      'name': "About",
-      'link': "/about"
-    },
-    {
-      'name': "Signup",
-      'link': "/signup"
-    }
-  ]
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   let [alert, setAlert] = useState({ type: "", data: "", visible: false });
@@ -106,7 +92,7 @@ function Login() {
   return (
     <>
       <Header navlinks={navlinks} />
-      <main className="w-full h-[85vh] flex items-center justify-center">
+      <main className="w-full h-[85vh] flex items-center justify-center px-3">
         {alert.visible && <Alert type={alert.type} data={alert.data} />}
 
         <div className=" w-[400px] rounded shadow-lg overflow-hidden ">
@@ -153,6 +139,9 @@ function Login() {
                 <MdError size={15} />
                 please choose a strong password
               </p>
+            </div>
+            <div className="text-sm mt-3 ml-2">
+                Forgot Password ? Click <Link to={'/forgot-password'} className=' decoration-wavy underline decoration-orange-500 underline-offset-2'>here</Link>
             </div>
             <button
               type="submit"

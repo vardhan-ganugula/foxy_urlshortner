@@ -81,6 +81,9 @@ async function getAllUrls(req,res){
         },
         totalClicks : {
           $sum : 1
+        },
+        devices : {
+          $first : "$devices"
         }
       }
     }

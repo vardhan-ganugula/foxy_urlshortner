@@ -41,8 +41,14 @@ let urlSchema = mongoose.Schema(
       type : mongoose.Schema.Types.ObjectId,
       ref : 'users',
       default : '669b6a5bf4ee76c4f6573efe'
-    }
+    },
+    devices : {
+      mobile : {type : Number, default : 0},
+      tablet : {type : Number, default : 0},
+      desktop : {type : Number, default : 0}
   },
+  },
+  
   { timestamps: true }
 );
 

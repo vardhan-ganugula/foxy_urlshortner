@@ -2,22 +2,11 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import { MdError } from "react-icons/md";
 import Alert from "../components/Alert";
+import { navlinks } from "../../utils";
+import {Link} from 'react-router-dom'
 
 function SignUp() {
-  const navlinks = [
-    {
-      'name': "Home",
-      'link': "/"
-    },
-    {
-      'name': "About",
-      'link': "/about"
-    },
-    {
-      'name': "Signup",
-      'link': "/signup"
-    }
-  ]
+
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   let [cpassword, setCpassword] = useState("");
@@ -120,9 +109,9 @@ function SignUp() {
   return (
     <>
       <Header navlinks={navlinks} />
-      <main className="w-full h-[85vh] flex items-center justify-center">
+      <main className="w-full h-[85vh] flex items-center justify-center ">
         {alert.visible && <Alert type={alert.type} data={alert.data} />}
-        <div className=" w-[400px] rounded shadow-lg overflow-hidden ">
+        <div className=" w-[400px] rounded shadow-lg overflow-hidden px-3 py-5">
           <h2 className="w-full py-4 bg-orange-500 text-white text-center text-2xl font-bold">
             Register Form
           </h2>
@@ -206,7 +195,9 @@ function SignUp() {
                 password doesn't matches
               </p>
             </div>
-
+            <div className="text-sm mt-3 ml-2">
+                Already have an account ? login <Link to={'/login'} className=' decoration-wavy underline decoration-orange-500 underline-offset-2'>here</Link>
+            </div>
             <button
               type="submit"
               className="w-full py-3 rounded mt-5 font-semibold bg-orange-500 text-white"

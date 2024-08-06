@@ -43,7 +43,7 @@ function Sidebar() {
             </div>
             <div className="sidebar_item">
               <NavLink
-                to="/add-domain"
+                to="/create-url"
                 className="bg-zinc-800/80 text-white w-full flex text-center py-2 gap-2 px-3 rounded-lg "
               >
                 <IoIosLink size={20} /> <span> Create</span>

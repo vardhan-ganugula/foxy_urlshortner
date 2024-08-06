@@ -2,21 +2,10 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import { MdError } from "react-icons/md";
 import Alert from "../components/Alert";
+import { navlinks } from "../../utils";
+
 function ForgotPassword() {
-  const navlinks = [
-    {
-      'name': "Home",
-      'link': "/"
-    },
-    {
-      'name': "About",
-      'link': "/about"
-    },
-    {
-      'name': "Signup",
-      'link': "/signup"
-    }
-  ]
+
   let [email, setEmail] = useState("");
   let [proceed, isProceed] = useState(false);
   let [alert, setAlert] = useState({ type: "", data: "", visible: false });
@@ -78,7 +67,7 @@ function ForgotPassword() {
   return (
     <>
       <Header navlinks={navlinks} />
-      <main className="w-full h-[85vh] flex items-center justify-center">
+      <main className="w-full h-[85vh] flex items-center justify-center px-3">
         {alert.visible && <Alert type={alert.type} data={alert.data} />}
 
         <div className=" w-[400px] rounded shadow-lg overflow-hidden ">

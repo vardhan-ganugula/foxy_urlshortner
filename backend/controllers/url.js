@@ -47,9 +47,11 @@ async function handleUrlForward(req, res) {
     ? xForwardedFor.split(",")[0]
     : req.connection.remoteAddress;
   const device = req.useragent.platform;
+  let deviceName = req.useragent.isMobile ? 'devices.mobile' : req.useragent.isTablet ? 'devices.tablet' : 'devices.desktop';
   try {
     const response = await URL.findOneAndUpdate(
       { url: req.headers.host + "/" + id },
+      { $inc: { [deviceName]: 1 } },
       {
         $push: {
           viewHistory: {

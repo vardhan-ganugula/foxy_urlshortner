@@ -1,21 +1,10 @@
 import React, { useState } from "react";
 import { MdError } from "react-icons/md";
 import { useParams } from "react-router-dom";
+import { navlinks } from "../../utils";
+
 function ResetPassword() {
-  const navlinks = [
-    {
-      'name': "Home",
-      'link': "/"
-    },
-    {
-      'name': "About",
-      'link': "/about"
-    },
-    {
-      'name': "Signup",
-      'link': "/signup"
-    }
-  ]
+
   let [password, setPassword] = useState("");
   let [cpassword, setCpassword] = useState("");
   let { id } = useParams();
@@ -76,7 +65,7 @@ function ResetPassword() {
     }
   }
   return (
-    <main className="w-full h-[85vh] flex items-center justify-center">
+    <main className="w-full h-[85vh] flex items-center justify-center px-3">
       <div className=" w-[400px] rounded shadow-lg overflow-hidden ">
         <h2 className="w-full py-4 bg-orange-500 text-white text-center text-2xl font-bold">
           Reset Password

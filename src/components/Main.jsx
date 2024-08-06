@@ -5,6 +5,7 @@ import { FaLink } from "react-icons/fa6";
 import { FaTools } from "react-icons/fa";
 
 import Alert from "./Alert";
+import { Link } from "react-router-dom";
 
 function Main() {
   const [url, setUrl] = useState("");
@@ -110,9 +111,9 @@ function Main() {
                   Shorten Link <FaLink className="ml-3" size={15} />
                 </div>
                 <div className="py-3 bg-transparent px-5 rounded-t-md ">
-                  <a href="#" className="flex">
+                  <Link to={'/dashboard'} className="flex">
                     Dashboard <FaTools className="ml-3" size={15} />{" "}
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="bg-white w-full md:w-[500px] md:py-5 rounded-md md:px-5 shadow-md p-2">

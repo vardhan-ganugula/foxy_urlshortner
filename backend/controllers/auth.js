@@ -6,8 +6,6 @@ const dotenv = require("dotenv");
 dotenv.config();
 const secret = process.env.SECRET;
 
-
-
 async function handleCreateUser(req, res) {
   const { username, password, email } = req.body;
 
@@ -34,31 +32,45 @@ async function handleCreateUser(req, res) {
 
 async function handleSignIn(req, res) {
   const { password, email } = req.body;
-  try {
-    const userResponse = await User.findOne({
-      password,
-      email,
-    });
-    const token = jwt.sign(
-      {
-        uid: userResponse._id,
-        time: Date.now(),
-      },
-      secret, { expiresIn: "1d" }
-    );
-
-    res.json({
-      status: "success",
-      userId: userResponse._id,
-      token: token,
-    });
-  } catch (e) {
-    console.log(e);
-    res.status(401).json({
+  if ((!password, !email))
+    return res.json({
       status: "failed",
-      msg: "authentication failed",
+      msg: "email or password required",
     });
-  }
+  console.log("entered");
+
+  User.findOne({
+    password,
+    email,
+  })
+    .then((data) => {
+      if(!data){
+        return res.json({
+          status: "failed",
+          msg: "authentication failed",
+        })
+      }
+      const token = jwt.sign(
+        {
+          uid: data._id,
+          time: Date.now(),
+        },
+        secret,
+        { expiresIn: "1d" }
+      );
+      res.json({
+        status: "success",
+        userId: data._id,
+        token: token,
+      });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(401).json({
+        status: "failed",
+        msg: "authentication failed",
+      });
+    });
 }
 
 async function handleForgotPassword(req, res) {
@@ -130,18 +142,16 @@ async function handleResetPassword(req, res) {
       }
     );
     res.json({
-        status: "success",
-        msg : 'password set successfully'
-    })
+      status: "success",
+      msg: "password set successfully",
+    });
   } catch (e) {
     console.log(e);
-    console.log('error')
+    console.log("error");
     return res.json({
       status: "failed",
       msg: "token error",
     });
-
-    
   }
 }
 module.exports = {

@@ -1,0 +1,1 @@
+export {navlinks} from './navbarLinks'

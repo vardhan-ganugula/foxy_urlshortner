@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import CheckLogin from "../../utils/AuthProvider";
+import CheckLogin from "../../../utils/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../../components/Sidebar";
 import { FaArrowLeft } from "react-icons/fa6";
-import Logo from "../assets/logo.png";
+import Logo from "../../assets/logo.png";
 import Cookies from "universal-cookie";
 import { format } from "date-fns";
 import { HiMiniBars3BottomRight } from "react-icons/hi2";
@@ -16,8 +16,10 @@ import {
   CartesianGrid,
   AreaChart,
   Area,
+  PieChart,
 } from "recharts";
-import { useSidebar } from "../contexts/SidebarContext";
+import { useSidebar } from "../../contexts/SidebarContext";
+import DashboardTopBar from "../../components/DashboardTopBar";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -64,36 +66,15 @@ function Dashboard() {
         }
       })
       .catch((err) => console.error(err));
-  }, []);
+
+    }, []);
+      console.log('hi')
   return (
     <>
       <div className="w-screen h-screen overflow-hidden bg-zinc-900 flex ">
         <Sidebar />
         <div className="flex-grow bg-black text-white p-5 h-full w-auto overflow-y-auto">
-          <div className="w-full mb-5 flex justify-between">
-            <div className="flex gap-5 text-lg items-center">
-              <FaArrowLeft size={20} /> <span>Dashboard</span>
-            </div>
-            <div className="flex gap-5 items-center">
-              <div
-                className="block cursor-pointer"
-                onClick={() => setSidebarStatus((prev) => !prev)}
-              >
-                <HiMiniBars3BottomRight size={25} />
-              </div>
-              <Link
-                to={"/profile"}
-                className="bg-orange-600 text-sm py-2 px-4 rounded-full"
-              >
-                profile
-              </Link>
-              <img
-                src={Logo}
-                alt=""
-                className="h-[40px] w-[40px] bg-white rounded-full"
-              />
-            </div>
-          </div>
+          <DashboardTopBar name="Dashboard" />
           <div id="main_area">
             <div className="min-h-80 w-full bg-zinc-800 rounded-lg py-3 text-xs">
             <ResponsiveContainer width="100%" height={300}>
@@ -108,7 +89,7 @@ function Dashboard() {
                       />
                     </linearGradient>
                   </defs>
-                  <Tooltip />
+                  <Tooltip content={customTooltip} />
                   <XAxis dataKey="_id" />
                   <YAxis dataKey="totalClicks" axisLine={false} />
                   <Area
@@ -123,9 +104,8 @@ function Dashboard() {
             </div>
 
             <div className="w-full flex gap-3 flex-col-reverse md:flex-row p-2 mt-5">
-              <div className="md:w-2/3 w-full">
+              <div className="w-full">
                 <div>
-                  
                   <h4 className=" mb-3">All urls</h4>
                 </div>
                 <div>
@@ -136,38 +116,50 @@ function Dashboard() {
                           <th className="p-3">Short Id</th>
                           <th className="p-3"> Domain </th>
                           <th className="p-3"> URL </th>
-                          <th className="p-3"> Domain </th>
+                          <th className="p-3"> Date </th>
                           <th className="p-3"> Total Clicks </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-zinc-800/80 text-xs">
+                      <tbody className="bg-zinc-800/80 text-xs text-center">
                         {
-                          tableData ? tableData.map( tuple => (
-                            (<tr className="border-b-2 border-gray-700 hover:bg-zinc-700 cursor-pointer" key={tuple._id}>
-                              <td className="p-2">{tuple._id} </td>
-                              <td className="p-2 w-[150px] text-ellipsis overflow-hidden block">{tuple.domain}</td>
-                              <td className="p-2 ">{tuple.url} </td>
+                          tableData.length>0 ? tableData.map( tuple => (
+                            (<tr className="border-b-2 border-gray-700 hover:bg-zinc-900/50 cursor-pointer" key={tuple._id}>
+                              <td className="p-2">{tuple._id}</td>
+                              <td className="p-2 w-auto text-ellipsis overflow-hidden block">{tuple.domain}</td>
+                              <td className="p-2 ">{tuple.url}</td>
                               <td className="p-2">
                                 {format(
                                   new Date( tuple['createdAt']),
                                   "yyyy-MM-dd"
                                 )}
                               </td>
-                              <td className="p-2 text-center"> {tuple.totalClicks} </td>
+                              <td className="p-2 text-center">{tuple.totalClicks}</td>
                             </tr>)
-                          )) : (<tr> <td colSpan="4">No data found</td> </tr>)
+                          )) : ( <tr><td colSpan="5" className="py-2">No data found</td></tr>)
                         }
                       </tbody>
                     </table>
                   </div>
                 </div>
               </div>
+              
             </div>
           </div>
         </div>
       </div>
     </>
   );
+}
+
+const customTooltip = ({active, payload, label}) => {
+  if(active){
+    return (<div className="w-auto rounded-md bg-black p-3 shadow-lg">
+              <h4> <span className="font-bold">Short Id : </span>{label}</h4>
+              <h3> <span className="font-bold">Total Clicks : </span>{payload[0].value}</h3>
+            </div>)
+  }
+  return null
+
 }
 
 export default Dashboard;
