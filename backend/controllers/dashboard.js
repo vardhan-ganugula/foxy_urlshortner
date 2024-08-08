@@ -55,10 +55,16 @@ async function handleHome(req,res){
 }
 
 async function getAllUrls(req,res){
+  const userId =  req.query.userId;
+  if(typeof(userId) == 'undefined') 
+    return res.json({
+      status : 'failed',
+      details : 'please login'
+    })
   const pipeline = [
     {
       $match : {
-        "createdBy": new mongoose.Types.ObjectId(req.query.userId)
+        "createdBy": mongoose.Types.ObjectId.createFromHexString(userId)
       }
     },
     {

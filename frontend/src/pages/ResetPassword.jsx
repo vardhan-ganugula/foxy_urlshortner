@@ -114,7 +114,7 @@ function ResetPassword() {
             type="submit"
             className="w-full py-3 rounded mt-5 font-semibold bg-orange-500 text-white"
           >
-            SignIn
+            Update Password
           </button>
         </form>
       </div>

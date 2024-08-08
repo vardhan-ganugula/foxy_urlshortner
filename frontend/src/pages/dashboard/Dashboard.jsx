@@ -34,6 +34,10 @@ function Dashboard() {
   let [tableData, setTableData] = useState([]);
   useEffect(() => {
     const userId = cookie.get("userId");
+    if(typeof(userId) == 'undefined'){
+      navigate('/login')
+      return;
+    }
     if (!CheckLogin()) navigate("/login");
     fetch(import.meta.env.VITE_SERVER + "/dashboard", {
       method: "POST",

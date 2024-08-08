@@ -102,7 +102,7 @@ function ForgotPassword() {
               type="submit"
               className="w-full py-3 rounded mt-5 font-semibold bg-orange-500 text-white"
             >
-              Login
+              Send Link
             </button>
           </form>
         </div>
