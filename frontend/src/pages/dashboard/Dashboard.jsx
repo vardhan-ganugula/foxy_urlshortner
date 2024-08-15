@@ -30,7 +30,6 @@ function Dashboard() {
       _id: "no data found",
     },
   ]);
-  let { setSidebarStatus } = useSidebar();
   let [tableData, setTableData] = useState([]);
   useEffect(() => {
     const userId = cookie.get("userId");
@@ -39,40 +38,8 @@ function Dashboard() {
       return;
     }
     if (!CheckLogin()) navigate("/login");
-    fetch(import.meta.env.VITE_SERVER + "/dashboard", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({
-        userId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.resp.length) setData(res.resp);
-      })
-      .catch((err) => console.error(err));
+  }, []);
 
-    fetch(
-      import.meta.env.VITE_SERVER + `/dashboard/get-links?userId=${userId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json",
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.data.length > 0) {
-          setTableData(res.data);
-        }
-      })
-      .catch((err) => console.error(err));
-
-    }, []);
-      console.log('hi')
   return (
     <>
       <div className="w-screen h-screen overflow-hidden bg-zinc-900 flex ">
