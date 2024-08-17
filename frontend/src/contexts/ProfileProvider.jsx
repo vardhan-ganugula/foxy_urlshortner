@@ -4,7 +4,9 @@ import Cookies from "universal-cookie";
 export const ProfileContext = createContext({
   data: [],
   tableData: [],
-  domains: [],
+  loading: true,
+  profileDetails: [],
+  setLoading: () => {},
 });
 
 export const ProfileContextProvider = ({ children }) => {
@@ -13,46 +15,29 @@ export const ProfileContextProvider = ({ children }) => {
     _id: "no data found",
   });
   const [tableData, setTableData] = useState([]);
-  const [domains, setDomains] = useState([]);
-  const cookie = new Cookies();
-  useEffect( ()=> {
-    const userId = cookie.get("userId");
-    fetch(import.meta.env.VITE_SERVER + "/dashboard", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          if (res.resp.length) setData(res.resp);
-        })
-        .catch((err) => console.error(err));
-  
-      fetch(
-        import.meta.env.VITE_SERVER + `/dashboard/get-links?userId=${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-type": "application/json",
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((res) => {
-          if (res.data.length > 0) {
-            setTableData(res.data);
-          }
-        })
-        .catch((err) => console.error(err));
-  
-     
+  const [profileDetails, setProfileDetails] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [gotDetails, upDatedetails] = useState(false);
 
-  }, [])
-  return <ProfileContext.Provider value={ {data, domains, tableData}}> {children} </ProfileContext.Provider>;
+  return (
+    <ProfileContext.Provider
+      value={{
+        data,
+        profileDetails,
+        tableData,
+        loading,
+        gotDetails,
+        upDatedetails,
+        setLoading,
+        setData,
+        setTableData,
+        setProfileDetails,
+      }}
+    >
+      {" "}
+      {children}{" "}
+    </ProfileContext.Provider>
+  );
 };
 
 export const useProfile = () => {

@@ -4,13 +4,16 @@ import App from "./App.jsx";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { SidebarContextProvider } from "./contexts/SidebarContext.jsx";
+import { ProfileContextProvider } from "./contexts/ProfileProvider.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <SidebarContextProvider>
-        <App />
-      </SidebarContextProvider>
+      <ProfileContextProvider>
+        <SidebarContextProvider>
+          <App />
+        </SidebarContextProvider>
+      </ProfileContextProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

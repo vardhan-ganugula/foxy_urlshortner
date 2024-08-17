@@ -2,108 +2,126 @@ const User = require("../models/User");
 const URL = require("../models/shortUrl");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const mongoose = require('mongoose')
-
+const mongoose = require("mongoose");
 
 dotenv.config();
 const secret = process.env.SECRET;
 
-async function handleHome(req,res){
-  const pipeline =  [
-    {
-      $match : {
-        createdBy : new mongoose.Types.ObjectId(req.body.userId)
-      }
-    },
-    {
-      $unwind: {
-        path: "$viewHistory",
-        preserveNullAndEmptyArrays: true
-      }
-    },
-    {
-      $group : {
-        _id : "$shortId",
-        totalClicks : {
-          $sum : 1
-        }
-      }
-    },
-    {
-      $sort : {
-        totalClicks : -1
-      }
-    },
-    {
-      $limit : 15
-    }
-  ]
-
-  URL.aggregate(pipeline).then(
-    resp => {
-      res.json({
-        resp
-      })
-    }
-  ).catch( err => {
-    res.json({
-      status : 'failed',
-      error : 'failed to get details'
-    })
-  })
-  
-}
-
-async function getAllUrls(req,res){
-  const userId =  req.query.userId;
-  if(typeof(userId) == 'undefined') 
+async function handleHome(req, res) {
+  const userId = req.query.userId;
+  if (typeof userId === "undefined") {
     return res.json({
-      status : 'failed',
-      details : 'please login'
-    })
-  const pipeline = [
+      status: "failed",
+      details: "please login",
+    });
+  }
+
+  let allData = {
+    dashboardData: {},
+    urlData: {},
+    profileData: {}
+  };
+
+  const pipeline1 = [
     {
-      $match : {
-        "createdBy": mongoose.Types.ObjectId.createFromHexString(userId)
-      }
+      $match: {
+        createdBy: new mongoose.Types.ObjectId(userId),
+      },
     },
     {
       $unwind: {
         path: "$viewHistory",
-        preserveNullAndEmptyArrays: true
-      }
+        preserveNullAndEmptyArrays: true,
+      },
     },
     {
-      $group : {
-        _id : "$shortId",
-        createdAt : {
-          $first : "$createdAt"
+      $group: {
+        _id: "$shortId",
+        totalClicks: {
+          $sum: 1,
         },
-        domain : {
-          $first : "$domain"
+      },
+    },
+    {
+      $sort: {
+        totalClicks: -1,
+      },
+    },
+    {
+      $limit: 15,
+    },
+  ];
+
+  const pipeline2 = [
+    {
+      $match: {
+        createdBy: new mongoose.Types.ObjectId(userId),
+      },
+    },
+    {
+      $unwind: {
+        path: "$viewHistory",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $group: {
+        _id: "$shortId",
+        createdAt: {
+          $first: "$createdAt",
         },
-        url : {
-          $first : "$url"
+        domain: {
+          $first: "$domain",
         },
-        totalClicks : {
-          $sum : 1
+        url: {
+          $first: "$url",
         },
-        devices : {
-          $first : "$devices"
+        totalClicks: {
+          $sum: 1,
+        },
+        devices: {
+          $first: "$devices",
+        },
+      },
+    },
+  ];
+
+  const pipeline3 = [
+    {
+        $match: {
+          "_id" : new mongoose.Types.ObjectId(userId)
         }
-      }
+    },
+    {
+        $project: {
+          "username" : 1,
+          "email" : 1,
+          "domains" : 1,
+          "profilePhoto" : 1,
+          "_id" : 0
+        }
     }
-  ] 
-  URL.aggregate(pipeline).then(resp => {
-    res.json({
-      data : resp
-    })
-  }).catch(err => res.json({
-    status : 'failed',
-    details : err
-  }))
+]
+  try {
+    const dashboardData = await URL.aggregate(pipeline1);
+    const urlData = await URL.aggregate(pipeline2);
+    const profileData = await User.aggregate(pipeline3);
+    allData = {
+      dashboardData,
+      urlData,
+      profileData
+    };
+
+    return res.json(allData);
+  } catch (err) {
+    return res.json({
+      status: "failed",
+      details: "failed to get details",
+      error: err.message,
+    });
+  }
 }
 
 module.exports = {
-  handleHome,getAllUrls
+  handleHome,
 };

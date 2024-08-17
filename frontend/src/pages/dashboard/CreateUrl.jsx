@@ -1,10 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import DashboardTopBar from "../../components/DashboardTopBar";
+import { useProfile } from "../../contexts/ProfileProvider";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
+import CheckLogin from "../../../utils/AuthProvider";
+
 
 function CreateUrl() {
-  let [domains, setDomains] = useState(["ul.techessayist.ninja"]);
-  let [output, setOutput] = useState('')
+  let {
+    profileDetails,
+    loading,
+    gotDetails,
+    upDatedetails,
+    setLoading,
+    setData,
+    setTableData,
+    setProfileDetails,
+  } = useProfile();
+  let [domains, setDomains] = useState(profileDetails[0]?.domains || []);
+
+  let [output, setOutput] = useState("");
+  console.log(gotDetails)
+  const navigate = useNavigate();
+  useEffect(() => {
+    const userId = new Cookies().get("userId");
+    const token = new Cookies().get("token");
+    if (!CheckLogin()) {
+      navigate("/login");
+      return;
+    }
+    if (!gotDetails) {
+      fetch(import.meta.env.VITE_SERVER + `/dashboard?userId=${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+          authorization: "Bearer " + token,
+        },
+      })
+        .then((resp) => resp.json())
+        .then((resp) => {
+          if (resp.dashboardData) setData(resp.dashboardData);
+          if (resp.urlData) setTableData(resp.urlData);
+          if (resp.profileData) setProfileDetails(resp.profileData);
+          setLoading(false);
+          upDatedetails(true);
+          setDomains(resp.profileData[0].domains)
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [navigate]);
+
   const handleCreateURL = (e) => {
     e.preventDefault();
   };
@@ -74,27 +120,35 @@ function CreateUrl() {
                     />
                   </div>
                 </div>
-                { output && <div className="px-5 py-2 mt-5 flex gap-3 items-center">
-                  <div className="w-full flex gap-3">
-                    <input
-                      type="url"
-                      id="output_url"
-                      autoComplete="off"
-                      className="w-full bg-black border-zinc-800 border-2 rounded-lg px-5 py-2 outline-none text-white"
-                      disabled value={output}
-                    />
-                    <button type="button" className="px-5 py-2 rounded-md bg-white text-black">copy</button>
+                {output && (
+                  <div className="px-5 py-2 mt-5 flex gap-3 items-center">
+                    <div className="w-full flex gap-3">
+                      <input
+                        type="url"
+                        id="output_url"
+                        autoComplete="off"
+                        className="w-full bg-black border-zinc-800 border-2 rounded-lg px-5 py-2 outline-none text-white"
+                        disabled
+                        value={output}
+                      />
+                      <button
+                        type="button"
+                        className="px-5 py-2 rounded-md bg-white text-black"
+                      >
+                        copy
+                      </button>
+                    </div>
                   </div>
-                </div>}
+                )}
                 <div className="px-5 py-2 mt-5 flex gap-3 items-center">
-                  <button 
-                  className="w-full bg-white text-black py-2 rounded-md"
-                  type="submit">
+                  <button
+                    className="w-full bg-white text-black py-2 rounded-md"
+                    type="submit"
+                  >
                     create url
                   </button>
                 </div>
               </form>
-              
             </div>
           </div>
         </div>

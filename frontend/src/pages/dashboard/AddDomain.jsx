@@ -7,7 +7,9 @@ function AddDomain() {
       <Sidebar />
       <div className="flex-grow bg-black text-white p-5 h-full w-auto overflow-y-auto">
         <DashboardTopBar name="Add URL"/>
-        <div id="main_area"></div>
+        <div id="main_area">
+          coming soon
+        </div>
       </div>
     </div>
   )
