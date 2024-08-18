@@ -7,19 +7,15 @@ async function handleCreateURL(req, res) {
   if (body.shortCode) {
     shortId = body.shortCode;
   } else {
-    shortId = shortid.generate({
-      length: 6, // Length of the ID
-      charset: "alphabetic",
-    });
+    shortId = shortid.generate();
   }
-  const domain = process.env.BASE_URL
+  const domain = process.env.BASE_URL;
   if (!body.url) {
     return res.json({
       status: false,
     });
   }
   const redirectUrl = body.url;
-
   try {
     await URL.create({
       shortId,
@@ -63,8 +59,10 @@ async function handleUrlForward(req, res) {
         },
       }
     );
-
-    res.redirect(response.redirectUrl);
+    if(response)
+      res.redirect(response.redirectUrl);
+    else
+      res.redirect(process.env.ERROR_PAGE)
   } catch (e) {
     console.log(e);
     res.status(404).json({
