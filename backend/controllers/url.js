@@ -38,31 +38,28 @@ async function handleCreateURL(req, res) {
 }
 
 async function handleUrlForward(req, res) {
+  console.log('entered')
   const id = req.params.id;
   const xForwardedFor = req.headers["x-forwarded-for"];
-  const ip = xForwardedFor
-    ? xForwardedFor.split(",")[0]
-    : req.connection.remoteAddress;
+  const ip = xForwardedFor? xForwardedFor.split(",")[0]: req.connection.remoteAddress;
   const device = req.useragent.platform;
-  let deviceName = req.useragent.isMobile ? 'devices.mobile' : req.useragent.isTablet ? 'devices.tablet' : 'devices.desktop';
+  let deviceName = req.useragent.isMobile? "devices.mobile": req.useragent.isTablet? "devices.tablet" : "devices.desktop";
   try {
+    const record = {
+      date: Date.now(),
+      ip,
+      device: device,
+    };
     const response = await URL.findOneAndUpdate(
       { url: req.headers.host + "/" + id },
-      { $inc: { [deviceName]: 1 } },
-      {
-        $push: {
-          viewHistory: {
-            date: Date.now(),
-            ip,
-            device: device,
-          },
-        },
-      }
+      { $inc: { [deviceName]: 1 },
+        $push: { viewHistory: record } 
+      },
+      { new: true }
     );
-    if(response)
-      res.redirect(response.redirectUrl);
-    else
-      res.redirect(process.env.ERROR_PAGE)
+    console.log(response);
+    if (response.redirectUrl) res.redirect(response.redirectUrl);
+    else res.redirect(process.env.ERROR_PAGE);
   } catch (e) {
     console.log(e);
     res.status(404).json({
