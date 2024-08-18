@@ -5,12 +5,11 @@ import { useProfile } from "../../contexts/ProfileProvider";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import CheckLogin from "../../../utils/AuthProvider";
-
+import {ToastContainer, toast} from 'react-toastify'
 
 function CreateUrl() {
   let {
     profileDetails,
-    loading,
     gotDetails,
     upDatedetails,
     setLoading,
@@ -19,13 +18,15 @@ function CreateUrl() {
     setProfileDetails,
   } = useProfile();
   let [domains, setDomains] = useState(profileDetails[0]?.domains || []);
-
   let [output, setOutput] = useState("");
-  console.log(gotDetails)
   const navigate = useNavigate();
+  const [domain, setDomain] = useState("ul.techessayist.ninja")
+  const [url, setUrl] = useState("")
+  const [shortCode, setShortcode] = useState("")
+  const userId = new Cookies().get("userId");
+  const token = new Cookies().get("token");
   useEffect(() => {
-    const userId = new Cookies().get("userId");
-    const token = new Cookies().get("token");
+    
     if (!CheckLogin()) {
       navigate("/login");
       return;
@@ -49,18 +50,45 @@ function CreateUrl() {
         })
         .catch((err) => console.error(err));
     }
-  }, [navigate]);
+  }, []);
 
-  const handleCreateURL = (e) => {
+  const  handleCreateURL = async (e) => {
     e.preventDefault();
+    try{
+      const data = await fetch(import.meta.env.VITE_SERVER + `/dashboard/create_url`, {
+        method : "POST",
+        headers : {
+          "Content-type": "application/json",
+          authorization: "Bearer " + token,
+        },
+        body : JSON.stringify({domain, url, shortId  :shortCode, userId})
+      })
+      const response = await data.json();
+      if(response.status === 'success'){
+        toast.success("successfully created");
+        setOutput(response.url)
+        upDatedetails(false)
+      }
+      else{
+        toast.error(response.msg)
+      }
+    }catch(e) {
+      console.error(e)
+    }
   };
+  const copyShortUrl = () =>{
+    navigator.clipboard.writeText(output)
+    toast.success('link copied successfully')
+  }
   return (
     <div className="w-screen h-screen overflow-hidden bg-zinc-900 flex ">
       <Sidebar />
       <div className="flex-grow bg-black text-white p-5 h-full w-auto overflow-y-auto">
         <DashboardTopBar name="Create URL" />
+        
         <div id="main_area ">
           <div id="createUrlArea" className="bg-zinc-900 rounded">
+          
             <div className="p-5">
               <h4 className="text-3xl">
                 <span className="text-gray-300">Short</span>
@@ -77,11 +105,14 @@ function CreateUrl() {
                       enter the url
                     </label>
                     <input
+                    required
                       type="url"
                       id="url"
                       autoComplete="off"
                       className="w-full bg-black border-zinc-800 border-2 rounded-lg px-5 py-2 outline-none text-white"
                       placeholder="enter the url"
+                      value={url}
+                      onChange={ (e) => setUrl(e.target.value)}
                     />
                   </div>
                 </div>
@@ -95,8 +126,11 @@ function CreateUrl() {
                       domain
                     </label>
                     <select
+                    required
                       name="domain"
                       id="domain"
+                      value={domain}
+                      onChange={ (e) => setDomain(e.target.value)}
                       className="w-full bg-black border-zinc-800 border-2 rounded-lg px-5 py-2 outline-none text-white"
                     >
                       {domains.map((elem, indx) => (
@@ -112,11 +146,14 @@ function CreateUrl() {
                       short code
                     </label>
                     <input
+                    
                       type="text"
                       id="alias"
                       name="alias"
                       className="w-full bg-black border-zinc-800 border-2 rounded-lg px-5 py-2 outline-none text-white"
                       placeholder="my_short_url"
+                      value={shortCode}
+                      onChange={e => setShortcode(e.target.value)}
                     />
                   </div>
                 </div>
@@ -134,6 +171,7 @@ function CreateUrl() {
                       <button
                         type="button"
                         className="px-5 py-2 rounded-md bg-white text-black"
+                        onClick={ copyShortUrl}
                       >
                         copy
                       </button>

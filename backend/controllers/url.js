@@ -12,7 +12,8 @@ async function handleCreateURL(req, res) {
       charset: "alphabetic",
     });
   }
-  if (!body.url || !body.domain) {
+  const domain = process.env.BASE_URL
+  if (!body.url) {
     return res.json({
       status: false,
     });
@@ -23,14 +24,14 @@ async function handleCreateURL(req, res) {
     await URL.create({
       shortId,
       redirectUrl,
-      url: body.domain + "/" + shortId,
-      domain: body.domain,
+      url: domain + "/" + shortId,
+      domain: domain,
       viewHistory: [],
     });
     return res.json({
       status: true,
       shortId,
-      url: body.domain + "/" + shortId,
+      url: domain + "/" + shortId,
     });
   } catch (e) {
     console.log("duplicated");

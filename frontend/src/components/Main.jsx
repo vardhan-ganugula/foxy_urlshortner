@@ -3,7 +3,7 @@ import { IoMdLock } from "react-icons/io";
 import { IoCopyOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa6";
 import { FaTools } from "react-icons/fa";
-
+import {ToastContainer, toast} from 'react-toastify';
 import Alert from "./Alert";
 import { Link } from "react-router-dom";
 

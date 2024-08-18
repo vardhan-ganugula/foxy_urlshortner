@@ -20,10 +20,10 @@ function DashboardTopBar({name}) {
           <HiMiniBars3BottomRight size={25} />
         </div>
         <Link
-          to={"/profile"}
+          to={"/logout"}
           className="bg-orange-600 text-sm py-2 px-4 rounded-full"
         >
-          profile
+          logout
         </Link>
         <img
           src={Logo}

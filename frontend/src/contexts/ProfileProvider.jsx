@@ -2,18 +2,22 @@ import { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 
 export const ProfileContext = createContext({
-  data: [],
+  data: [ { totalClicks: 0, _id: "no data found" }, ],
+  profileDetails: [],
   tableData: [],
   loading: true,
-  profileDetails: [],
+  gotDetails: false,
+  upDatedetails: () => {},
   setLoading: () => {},
+  setTableData: () => {},
+  setProfileDetails: () => {},
 });
 
 export const ProfileContextProvider = ({ children }) => {
-  const [data, setData] = useState({
+  const [data, setData] = useState([{
     totalClicks: 0,
     _id: "no data found",
-  });
+  }]);
   const [tableData, setTableData] = useState([]);
   const [profileDetails, setProfileDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,8 +38,7 @@ export const ProfileContextProvider = ({ children }) => {
         setProfileDetails,
       }}
     >
-      {" "}
-      {children}{" "}
+      {children}
     </ProfileContext.Provider>
   );
 };

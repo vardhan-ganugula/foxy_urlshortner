@@ -31,6 +31,7 @@ function Dashboard() {
     gotDetails,
     upDatedetails,
   } = useProfile();
+
   useEffect(() => {
     const userId = new Cookies().get("userId");
     const token = new Cookies().get("token");
@@ -49,16 +50,18 @@ function Dashboard() {
       })
         .then((resp) => resp.json())
         .then((resp) => {
-          if (resp.dashboardData) setData(resp.dashboardData);
+          if (resp.dashboardData.length > 0){
+            setData(resp.dashboardData)
+          };
           if (resp.urlData) setTableData(resp.urlData);
           if (resp.profileData) setProfileDetails(resp.profileData);
           setLoading(false);
           upDatedetails(true);
+          
         })
         .catch((err) => console.error(err));
     }
   }, [navigate]);
-
   return (
     <div className="w-screen h-screen overflow-hidden bg-zinc-900 flex ">
       <Sidebar />
@@ -72,7 +75,7 @@ function Dashboard() {
           <div id="main_area">
             <div className="min-h-80 w-full bg-zinc-800 rounded-lg py-3 text-xs">
               <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={data}>
+                <AreaChart data={ data }>
                   <defs>
                     <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#FFB52E" stopOpacity={0.4} />
@@ -125,7 +128,7 @@ function Dashboard() {
                               <td className="p-2 w-auto text-ellipsis overflow-hidden block">
                                 {tuple.domain}
                               </td>
-                              <td className="p-2">{tuple.url}</td>
+                              <td className="p-2 text-left">{tuple.url}</td>
                               <td className="p-2">
                                 {format(
                                   new Date(tuple["createdAt"]),

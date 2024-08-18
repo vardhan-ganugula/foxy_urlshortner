@@ -3,6 +3,7 @@ const URL = require("../models/shortUrl");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const shortid = require("shortid");
 
 dotenv.config();
 const secret = process.env.SECRET;
@@ -19,13 +20,13 @@ async function handleHome(req, res) {
   let allData = {
     dashboardData: {},
     urlData: {},
-    profileData: {}
+    profileData: {},
   };
 
   const pipeline1 = [
     {
       $match: {
-        createdBy: new mongoose.Types.ObjectId(userId),
+        createdBy: mongoose.Types.ObjectId.createFromHexString(userId),
       },
     },
     {
@@ -55,7 +56,7 @@ async function handleHome(req, res) {
   const pipeline2 = [
     {
       $match: {
-        createdBy: new mongoose.Types.ObjectId(userId),
+        createdBy: mongoose.Types.ObjectId.createFromHexString(userId),
       },
     },
     {
@@ -88,20 +89,20 @@ async function handleHome(req, res) {
 
   const pipeline3 = [
     {
-        $match: {
-          "_id" : new mongoose.Types.ObjectId(userId)
-        }
+      $match: {
+        _id:  mongoose.Types.ObjectId.createFromHexString(userId),
+      },
     },
     {
-        $project: {
-          "username" : 1,
-          "email" : 1,
-          "domains" : 1,
-          "profilePhoto" : 1,
-          "_id" : 0
-        }
-    }
-]
+      $project: {
+        username: 1,
+        email: 1,
+        domains: 1,
+        profilePhoto: 1,
+        _id: 0,
+      },
+    },
+  ];
   try {
     const dashboardData = await URL.aggregate(pipeline1);
     const urlData = await URL.aggregate(pipeline2);
@@ -109,7 +110,7 @@ async function handleHome(req, res) {
     allData = {
       dashboardData,
       urlData,
-      profileData
+      profileData,
     };
 
     return res.json(allData);
@@ -122,6 +123,60 @@ async function handleHome(req, res) {
   }
 }
 
+async function handleCreteURL(req, res) {
+  let { shortId, domain, url, userId } = req.body;
+  if (!domain || !url || !userId) {
+    return res.json({
+      status: "failed",
+      msg: "not enough values",
+    });
+  }
+  if (!shortId) {
+    shortId = shortid.generate();
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (user) {
+      if (user.domains.includes(domain)) {
+        try {
+          await URL.create({
+            shortId,
+            redirectUrl : url,
+            url: domain + "/" + shortId,
+            domain: domain,
+            viewHistory: [],
+            createdBy : mongoose.Types.ObjectId.createFromHexString(userId)
+          });
+          return res.json({
+            status: 'success',
+            shortId,
+            url: domain + "/" + shortId,
+          });
+        } catch (e) {
+          console.log(e);
+          return res.json({
+            status: 'failed',
+            msg : 'duplicated url'
+          });
+        }
+      } else {
+        return res.json({
+          status: "error",
+          msg: "domain error",
+        });
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
+  res.json({
+    msg: "processing",
+  });
+}
+
 module.exports = {
   handleHome,
+  handleCreteURL,
 };
