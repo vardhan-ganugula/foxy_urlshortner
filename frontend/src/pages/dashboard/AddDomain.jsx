@@ -121,7 +121,7 @@ function AddDomain() {
                   <form onSubmit={checkForRecord} className="px-5" autoComplete="off">
                     <div className="mt-5 flex flex-col">
                       <label htmlFor="domainName" className="font-mono text-md mb-2">Enter your Domain</label>
-                      <input type="text" id="domainName" className="bg-black border-white border rounded px-4 py-2 outline-none w-2/5" required value={domain} onChange={e => setDomain(e.target.value)}/>
+                      <input type="text" id="domainName" className="bg-black border-white border rounded px-4 py-2 outline-none md:w-2/5 w-full" required value={domain} onChange={e => setDomain(e.target.value)}/>
                     </div>
                     <button type="submit" className="mt-5 px-5 py-2 bg-teal-500 rounded">submit</button>
                   </form>
@@ -134,7 +134,7 @@ function AddDomain() {
                   <form onSubmit={handleSSL} className="px-5" autoComplete="off">
                     <div className="mt-5 flex flex-col">
                       <label htmlFor="sslDomainName" className="font-mono text-md mb-2">Enter your Domain</label>
-                      <input type="text" id="sslDomainName" className="bg-black border-white border rounded px-4 py-2 outline-none w-2/5" required value={domain} disabled/>
+                      <input type="text" id="sslDomainName" className="bg-black border-white border rounded px-4 py-2 outline-none w-full md:w-2/5" required value={domain} disabled/>
                     </div>
                     <button type="submit" className="mt-5 px-5 py-2 bg-indigo-500 rounded">submit</button>
                   </form>

@@ -1,10 +1,11 @@
 const User = require("../models/User");
 const URL = require("../models/shortUrl");
-const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const shortid = require("shortid");
 const dns = require("node:dns");
+const { exec } = require("child_process");
+const fs = require("fs");
 dotenv.config();
 const secret = process.env.SECRET;
 
@@ -194,7 +195,7 @@ async function checkDnsRecords(req, res) {
       return res.json({
         status: "failed",
         msg: "check your hostname",
-        ipAddr : addr
+        ipAddr: addr,
       });
     }
     if (addr === process.env.BASE_IP) {
@@ -210,8 +211,46 @@ async function checkDnsRecords(req, res) {
     }
   });
 }
+
+async function addDomainToNginx(req, res) {
+  const domain = req.query.addr;
+  const domainPattern =
+    /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z0-9-]{1,63}(?<!-))*\.[A-Za-z]{2,}$/;
+  const isValidDomain = (domain) => domainPattern.test(domain);
+  if (isValidDomain(domain)) {
+    exec("node nginxConfiguration.js > output.txt", (err, stdout, stderr) => {
+      if (err) {
+        return res.json({
+          status: "failed",
+          msg: err,
+        });
+      }
+    });
+    let output;
+    fs.readFileSync("output.txt", (err, data) => {
+      if (err) {
+        return res.json({
+          status: "failed",
+          msg: "something went wrong",
+        });
+      }
+      output = data;
+    });
+    return res.json({
+      status: "success",
+      msg: "domain added successfully",
+      output,
+    });
+  } else {
+    return res.json({
+      status: "failed",
+      msg: "not a valid domain",
+    });
+  }
+}
 module.exports = {
   handleHome,
   handleCreteURL,
   checkDnsRecords,
+  addDomainToNginx
 };

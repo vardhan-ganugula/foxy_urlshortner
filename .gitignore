@@ -31,3 +31,5 @@ dist
 /backend/vercel.json
 /frontend/node_modules 
 /frontend/.gitignore 
+nginx
+nginxTemplate.js
