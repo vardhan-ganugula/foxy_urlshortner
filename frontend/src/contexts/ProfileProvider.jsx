@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 
 export const ProfileContext = createContext({
   data: [ { totalClicks: 0, _id: "no data found" }, ],
-  profileDetails: [],
+  profileDetails: {},
   tableData: [],
   loading: true,
   gotDetails: false,
@@ -11,6 +11,8 @@ export const ProfileContext = createContext({
   setLoading: () => {},
   setTableData: () => {},
   setProfileDetails: () => {},
+  setDomains: () => {},
+  domains : [],
 });
 
 export const ProfileContextProvider = ({ children }) => {
@@ -19,10 +21,10 @@ export const ProfileContextProvider = ({ children }) => {
     _id: "no data found",
   }]);
   const [tableData, setTableData] = useState([]);
-  const [profileDetails, setProfileDetails] = useState([]);
+  const [profileDetails, setProfileDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [gotDetails, upDatedetails] = useState(false);
-
+  const [domains, setDomains] = useState([]);
   return (
     <ProfileContext.Provider
       value={{
@@ -36,6 +38,7 @@ export const ProfileContextProvider = ({ children }) => {
         setData,
         setTableData,
         setProfileDetails,
+        domains, setDomains
       }}
     >
       {children}

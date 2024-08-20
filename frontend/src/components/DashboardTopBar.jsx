@@ -2,11 +2,12 @@ import React from "react";
 import { HiMiniBars3BottomRight } from "react-icons/hi2";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import Logo from "../assets/logo.png";
 import { useSidebar } from "../contexts/SidebarContext";
-
+import { useProfile } from "../contexts/ProfileProvider";
+import Logo from '../assets/logo.png'
 function DashboardTopBar({name}) {
   const { setSidebarStatus } = useSidebar();
+  const { profileDetails } = useProfile();
   return (
     <div className="w-full mb-5 flex justify-between">
       <div className="flex gap-5 text-lg items-center">
@@ -26,7 +27,7 @@ function DashboardTopBar({name}) {
           logout
         </Link>
         <img
-          src={Logo}
+          src={profileDetails.profilePhoto || Logo }
           alt=""
           className="h-[40px] w-[40px] bg-white rounded-full"
         />

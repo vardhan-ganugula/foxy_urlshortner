@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const shortid = require("shortid");
-
+const dns = require("node:dns");
 dotenv.config();
 const secret = process.env.SECRET;
 
@@ -75,7 +75,7 @@ async function handleHome(req, res) {
           $first: "$domain",
         },
         url: {
-          $first: "$url",
+          $first: "$redirectUrl",
         },
         totalClicks: {
           $sum: 1,
@@ -90,7 +90,7 @@ async function handleHome(req, res) {
   const pipeline3 = [
     {
       $match: {
-        _id:  mongoose.Types.ObjectId.createFromHexString(userId),
+        _id: mongoose.Types.ObjectId.createFromHexString(userId),
       },
     },
     {
@@ -142,22 +142,22 @@ async function handleCreteURL(req, res) {
         try {
           await URL.create({
             shortId,
-            redirectUrl : url,
+            redirectUrl: url,
             url: domain + "/" + shortId,
             domain: domain,
             viewHistory: [],
-            createdBy : mongoose.Types.ObjectId.createFromHexString(userId)
+            createdBy: mongoose.Types.ObjectId.createFromHexString(userId),
           });
           return res.json({
-            status: 'success',
+            status: "success",
             shortId,
             url: domain + "/" + shortId,
           });
         } catch (e) {
           console.log(e);
           return res.json({
-            status: 'failed',
-            msg : 'duplicated url'
+            status: "failed",
+            msg: "duplicated url",
           });
         }
       } else {
@@ -176,7 +176,41 @@ async function handleCreteURL(req, res) {
   });
 }
 
+async function checkDnsRecords(req, res) {
+  const hostname = req.query.addr;
+  if (!hostname) {
+    return res.json({
+      status: "failed",
+      msg: "address required",
+    });
+    return;
+  }
+  const options = {
+    family: 4,
+    hints: dns.ADDRCONFIG | dns.V4MAPPED,
+  };
+  dns.lookup(hostname, options, (err, addr, family) => {
+    if (err) {
+      return res.json({
+        status: "failed",
+        msg: "check your hostname",
+      });
+    }
+    if (addr === process.env.BASE_IP) {
+      return res.json({
+        status: "success",
+        msg: "address configured successfully",
+      });
+    } else {
+      return res.json({
+        status: "failed",
+        msg: "address is not configured",
+      });
+    }
+  });
+}
 module.exports = {
   handleHome,
   handleCreteURL,
+  checkDnsRecords,
 };

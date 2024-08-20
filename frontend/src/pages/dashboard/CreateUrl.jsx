@@ -1,57 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState,useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import DashboardTopBar from "../../components/DashboardTopBar";
 import { useProfile } from "../../contexts/ProfileProvider";
 import Cookies from "universal-cookie";
+import { toast} from 'react-toastify'
+import useDetails from "../../hooks/useDetails";
 import { useNavigate } from "react-router-dom";
 import CheckLogin from "../../../utils/AuthProvider";
-import {ToastContainer, toast} from 'react-toastify'
+
 
 function CreateUrl() {
-  let {
-    profileDetails,
-    gotDetails,
-    upDatedetails,
-    setLoading,
-    setData,
-    setTableData,
-    setProfileDetails,
-  } = useProfile();
-  let [domains, setDomains] = useState(profileDetails[0]?.domains || []);
+  let navigate = useNavigate();
+  useEffect(() => {
+    if (!CheckLogin()) {
+      navigate("/login");
+      return;
+    }
+  }, [navigate]);
+  let { loading } = useDetails();
+  let { upDatedetails, domains} = useProfile();
   let [output, setOutput] = useState("");
-  const navigate = useNavigate();
   const [domain, setDomain] = useState("ul.techessayist.ninja")
   const [url, setUrl] = useState("")
   const [shortCode, setShortcode] = useState("")
   const userId = new Cookies().get("userId");
   const token = new Cookies().get("token");
-  useEffect(() => {
-    
-    if (!CheckLogin()) {
-      navigate("/login");
-      return;
-    }
-    if (!gotDetails) {
-      fetch(import.meta.env.VITE_SERVER + `/dashboard?userId=${userId}`, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json",
-          authorization: "Bearer " + token,
-        },
-      })
-        .then((resp) => resp.json())
-        .then((resp) => {
-          if (resp.dashboardData) setData(resp.dashboardData);
-          if (resp.urlData) setTableData(resp.urlData);
-          if (resp.profileData) setProfileDetails(resp.profileData);
-          setLoading(false);
-          upDatedetails(true);
-          setDomains(resp.profileData[0].domains)
-        })
-        .catch((err) => console.error(err));
-    }
-  }, []);
-
   const  handleCreateURL = async (e) => {
     e.preventDefault();
     try{
@@ -135,7 +108,9 @@ function CreateUrl() {
                     >
                       {domains.map((elem, indx) => (
                         <option key={indx}> {elem} </option>
-                      ))}
+                      )) 
+                    }
+                    
                     </select>
                   </div>
                   <div className="md:w-1/2 w-full">

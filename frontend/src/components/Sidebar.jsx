@@ -4,17 +4,21 @@ import { HiMiniBars3BottomRight } from "react-icons/hi2";
 import { BiHomeAlt } from "react-icons/bi";
 import { FaGlobeAfrica } from "react-icons/fa";
 import { IoIosLink } from "react-icons/io";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {useSidebar} from '../contexts/SidebarContext';
 
 
 
 function Sidebar() {
   let {sidebarStatus, setSidebarStatus } = useSidebar();
+  let location = useLocation()
+  useEffect(()=> {
+    setSidebarStatus(window.innerWidth > 500)
+  }, [location, window.innerWidth])
   return (
     
       <>
-        <div className={`bg-zinc-900 h-screen z-30 ${ sidebarStatus ? 'md:w-[250px] w-full fixed md:static md:translate-x-0' : 'w-full fixed top-0 left-0 h-full bg-zinc-800/80  -translate-x-[100%]' } p-1 transition-all duration-500`}>
+        <div className={`bg-zinc-900 h-screen z-30 flex-shrink-0 ${ sidebarStatus ? 'md:w-[250px] w-full fixed md:static md:translate-x-0' : 'w-full fixed top-0 left-0 h-full bg-zinc-800/80  -translate-x-[100%]' } p-1 transition-all duration-500`}>
           <div className="flex gap-3 font-bold text-white justify-between items-center mb-5">
             <div className='flex gap-2 items-center'>
               <img src={Logo} className="w-11 h-14 ml-5" />
