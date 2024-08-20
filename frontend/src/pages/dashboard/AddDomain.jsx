@@ -50,9 +50,10 @@ function AddDomain() {
                   Add <span className="text-yellow-500">Domain</span>
                 </h4>
                 <p className="font-mono text-gray-500 mt-3">
-                  please add a cname record in your domain provider
+                  please add a A record in your domain provider
                 </p>
                 <details className="w-full bg-white rounded">
+                  
                   <summary className="bg-yellow-500 p-3 rounded text-black cursor-pointer">
                     How to Add <strong>"A"</strong> record
                   </summary>
@@ -106,6 +107,9 @@ function AddDomain() {
                             hours to propagate.
                           </li>
                         </ul>
+                      </li>
+                      <li className="py-5 mb-5">
+                        <span className="bg-red-500 text-white p-2 rounded">NOTE :</span> <span className="ml-3">if you are using cloudflare, please turn off <strong className="underline decoration-wavy decoration-red-500 underline-offset-2">proxy status</strong></span>
                       </li>
                     </ol>
                   </div>

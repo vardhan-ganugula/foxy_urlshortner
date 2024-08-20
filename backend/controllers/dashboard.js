@@ -194,6 +194,7 @@ async function checkDnsRecords(req, res) {
       return res.json({
         status: "failed",
         msg: "check your hostname",
+        ipAddr : addr
       });
     }
     if (addr === process.env.BASE_IP) {
