@@ -87,7 +87,7 @@ function AddDomain() {
                           <li>Choose "A" as the record type.</li>
                           <li>Name: Enter the subdomain (@).</li>
                           <li>
-                            IP Address: <strong>192.168.0.1</strong>
+                            IP Address: <strong>{import.meta.env.VITE_BASE_IP} </strong>
                           </li>
                           <li>TTL: Leave as default or set to 1 hour.</li>
                         </ul>
