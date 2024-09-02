@@ -55,9 +55,9 @@ function DashboardTable({ tableData }) {
               </thead>
               <tbody className="bg-zinc-800/80 text-xs text-center">
                 {filterData.length > 0 ? (
-                  filterData.map((tuple) => (
+                  filterData.map((tuple, i) => (
                     <tr
-                      className="border-b-2 border-gray-700 hover:bg-zinc-900/50 cursor-pointer"
+                      className={`border-b-2 border-gray-700 hover:bg-zinc-900/50 cursor-pointer ${(i%2==1)? 'bg-zinc-900/50' : ''}`}
                       key={tuple._id}
                     >
                       <td className="p-2">{tuple._id}</td>
