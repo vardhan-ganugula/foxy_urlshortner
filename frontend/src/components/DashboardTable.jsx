@@ -1,14 +1,46 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { format } from "date-fns";
+import { GoDotFill } from "react-icons/go";
 
 function DashboardTable({ tableData }) {
+  const searchFilterValue = useRef("");
+  const [filterData, setFilterData] = useState(tableData);
+  const handleSearch = () => {
+    let value = searchFilterValue.current.value;
+    let filterdData = tableData.filter(
+      (record) =>
+        record._id.toLowerCase().includes(value) ||
+        record.domain.toLowerCase().includes(value) ||
+        record.url.toLowerCase().includes(value) || 
+        record.totalClicks.toLowerCase().includes(value)
+    );
+    setFilterData(filterdData);
+  };
   return (
     <>
-      <div className="w-full">
-        <div>
-          <h4 className="mb-3">
-            All <span className="text-orange-600">URLs</span>
-          </h4>
+      <div className="w-full bg-zinc-800 rounded">
+        <div className="flex gap-3 items-center py-3">
+          <div className="flex flex-grow gap-3 items-center">
+            <h4 className="ml-3 font-semibold">
+              All <span className="text-orange-500">URLs</span>
+            </h4>
+
+            <div className="flex justify-between flex-grow pr-5 items-center">
+              <div className="flex gap-1 items-center text-xs rounded-lg bg-violet-200 border-violet-800 py-1 px-2 text-violet-800 ">
+                <GoDotFill size={6} /> new
+              </div>
+              <div>
+                <input
+                  type="search"
+                  id=""
+                  ref={searchFilterValue}
+                  onChange={handleSearch}
+                  className="bg-black/0 border-white outline-none rounded px-2 border-2 py-1"
+                  placeholder="search..."
+                />
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           <div className="text-xs bg-zinc-800/80 rounded-sm overflow-x-auto whitespace-nowrap">
@@ -23,8 +55,8 @@ function DashboardTable({ tableData }) {
                 </tr>
               </thead>
               <tbody className="bg-zinc-800/80 text-xs text-center">
-                {tableData.length > 0 ? (
-                  tableData.map((tuple) => (
+                {filterData.length > 0 ? (
+                  filterData.map((tuple) => (
                     <tr
                       className="border-b-2 border-gray-700 hover:bg-zinc-900/50 cursor-pointer"
                       key={tuple._id}

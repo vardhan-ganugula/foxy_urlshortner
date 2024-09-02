@@ -12,7 +12,7 @@ const UserSchema = mongoose.Schema({
     },
     domains: {
         type: [String], 
-        default : ['ul.techessayist.ninja', 'foxyurl.vercel.app']
+        default : ['ul.techessayist.ninja']
     },
     password: {
         type: String,
