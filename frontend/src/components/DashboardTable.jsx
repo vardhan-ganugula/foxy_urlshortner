@@ -6,13 +6,12 @@ function DashboardTable({ tableData }) {
   const searchFilterValue = useRef("");
   const [filterData, setFilterData] = useState(tableData);
   const handleSearch = () => {
-    let value = searchFilterValue.current.value;
+    let value = searchFilterValue.current.value.toLowerCase();
     let filterdData = tableData.filter(
       (record) =>
         record._id.toLowerCase().includes(value) ||
         record.domain.toLowerCase().includes(value) ||
-        record.url.toLowerCase().includes(value) || 
-        record.totalClicks.toLowerCase().includes(value)
+        record.url.toLowerCase().includes(value)
     );
     setFilterData(filterdData);
   };
