@@ -216,37 +216,40 @@ async function addDomainToNginx(req, res) {
   const domain = req.query.addr;
   const domainPattern =
     /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z0-9-]{1,63}(?<!-))*\.[A-Za-z]{2,}$/;
+  
   const isValidDomain = (domain) => domainPattern.test(domain);
+  
   if (isValidDomain(domain)) {
     exec("node nginxConfiguration.js > output.txt", (err, stdout, stderr) => {
       if (err) {
         return res.json({
           status: "failed",
-          msg: err,
+          msg: err.message,
         });
       }
-    });
-    let output;
-    fs.readFileSync("output.txt", (err, data) => {
-      if (err) {
+
+      fs.readFile("output.txt", 'utf8', (err, data) => {
+        if (err) {
+          return res.json({
+            status: "failed",
+            msg: "Something went wrong while reading the output file",
+          });
+        }
+
         return res.json({
-          status: "failed",
-          msg: "something went wrong",
+          status: "success",
+          msg: "Domain added successfully",
+          output: data,
         });
-      }
-      output = data;
-    });
-    return res.json({
-      status: "success",
-      msg: "domain added successfully",
-      output,
+      });
     });
   } else {
     return res.json({
       status: "failed",
-      msg: "not a valid domain",
+      msg: "Not a valid domain",
     });
   }
+
 }
 module.exports = {
   handleHome,
