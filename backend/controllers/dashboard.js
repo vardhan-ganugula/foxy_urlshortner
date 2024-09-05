@@ -214,46 +214,72 @@ async function checkDnsRecords(req, res) {
 
 async function addDomainToNginx(req, res) {
   const domain = req.query.addr;
-  const domainPattern =
-    /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z0-9-]{1,63}(?<!-))*\.[A-Za-z]{2,}$/;
-  
-  const isValidDomain = (domain) => domainPattern.test(domain);
-  
-  if (isValidDomain(domain)) {
-    exec(`node ./controllers/nginxConfiguration.js ${domain}> output.txt`, (err, stdout, stderr) => {
-      if (err) {
-        return res.json({
-          status: "failed",
-          msg: err.message
-        });
-      }
-
-      fs.readFile("output.txt", 'utf8', (err, data) => {
-        if (err) {
-          return res.json({
-            status: "failed",
-            msg: "Something went wrong while reading the output file",
-          });
-        }
-
-        return res.json({
-          status: "success",
-          msg: "Domain added successfully",
-          output: data,
-        });
-      });
-    });
-  } else {
+  const userId = req.query.id;
+  if(!domain || !userId){
     return res.json({
       status: "failed",
-      msg: "Not a valid domain",
+      msg : "userId and domain is required"
     });
   }
+  try {
+    const domainPattern =
+      /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z0-9-]{1,63}(?<!-))*\.[A-Za-z]{2,}$/;
 
+    const isValidDomain = (domain) => domainPattern.test(domain);
+
+    if (isValidDomain(domain)) {
+      exec(
+        `node ./controllers/nginxConfiguration.js ${domain}> output.txt`,
+        (err, stdout, stderr) => {
+          if (err) {
+            return res.json({
+              status: "failed",
+              msg: err.message,
+            });
+          }
+          let domainStatus = false;
+          fs.readFile("output.txt", "utf8", (err, data) => {
+            if (err) {
+              return res.json({
+                status: "failed",
+                msg: "Something went wrong while reading the output file",
+              });
+            }
+            domainStatus = true;
+          });
+          if (domainStatus) {
+            const result = User.findOneAndUpdate(
+              { _id: userId },
+              { $addToSet: { domains: newDomain } },
+              { new: true }
+            );
+
+            if (!result) {
+              return res.json({
+                status: "failed",
+                msg: "user not found",
+              });
+            } else {
+              return res.json({
+                status: "success",
+                msg: "Domain added successfully",
+                output: data,
+              });
+            }
+          }
+        }
+      );
+    } else {
+      return res.json({
+        status: "failed",
+        msg: "Not a valid domain",
+      });
+    }
+  } catch (e) {}
 }
 module.exports = {
   handleHome,
   handleCreteURL,
   checkDnsRecords,
-  addDomainToNginx
+  addDomainToNginx,
 };
