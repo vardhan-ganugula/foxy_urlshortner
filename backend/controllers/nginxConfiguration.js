@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const nginxConfigPath = 'nginx'; 
+const nginxConfigPath = '/'; 
 const domainExists = (configContent, domain) => {
     const serverNameRegex = new RegExp(`server_name[\\s\\S]*${domain}[\\s;]`, 'g');
     return serverNameRegex.test(configContent);
@@ -36,16 +36,16 @@ const addDomain = (newDomain) => {
 
                 message += `Domain ${newDomain} added successfully.\n`;
 
-                // exec('sudo systemctl reload nginx', (err, stdout, stderr) => {
-                //     if (err) {
-                //         message += `Error reloading NGINX: ${err}\n`;
-                //         console.log(message);
-                //         return;
-                //     }
+                exec('sudo systemctl reload nginx', (err, stdout, stderr) => {
+                    if (err) {
+                        message += `Error reloading NGINX: ${err}\n`;
+                        console.log(message);
+                        return;
+                    }
 
-                //     message += 'NGINX reloaded successfully.\n';
-                //     console.log(message);
-                // });
+                    message += 'NGINX reloaded successfully.\n';
+                    console.log(message);
+                });
             });
         } else {
             message += 'No server_name directive found in the NGINX config.\n';
