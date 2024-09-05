@@ -221,6 +221,28 @@ async function addDomainToNginx(req, res) {
       msg : "userId and domain is required"
     });
   }
+  try{
+    const allDomains = await User.findById(userId, "domains");
+    if(!allDomains){
+      return res.json({
+        status: "no user or domains found",
+      })
+    }
+
+    if(!allDomains.domains.includes(domain)){
+      return res.json({
+        status : "failed",
+        msg : "not a valid domain"
+      });
+    }
+
+    
+  }catch(e){
+    return res.json({
+      status: "failed",
+      msg : "user not found"
+    })
+  }
   try {
     const domainPattern =
       /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z0-9-]{1,63}(?<!-))*\.[A-Za-z]{2,}$/;
@@ -275,7 +297,13 @@ async function addDomainToNginx(req, res) {
         msg: "Not a valid domain",
       });
     }
-  } catch (e) {}
+  } catch (e) {
+    return res.json({
+      status: "failed",
+      msg : "unknown error",
+      error: toString(e)
+    })
+  }
 }
 module.exports = {
   handleHome,
