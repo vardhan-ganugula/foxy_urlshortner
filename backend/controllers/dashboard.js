@@ -225,6 +225,7 @@ async function addDomainToNginx(req, res) {
         return res.json({
           status: "failed",
           msg: err.message,
+          pwd : process.cwd()
         });
       }
 
