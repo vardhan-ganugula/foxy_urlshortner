@@ -220,12 +220,11 @@ async function addDomainToNginx(req, res) {
   const isValidDomain = (domain) => domainPattern.test(domain);
   
   if (isValidDomain(domain)) {
-    exec("node ./controllers/nginxConfiguration.js > output.txt", (err, stdout, stderr) => {
+    exec(`node ./controllers/nginxConfiguration.js ${domain}> output.txt`, (err, stdout, stderr) => {
       if (err) {
         return res.json({
           status: "failed",
-          msg: err.message,
-          pwd : process.cwd()
+          msg: err.message
         });
       }
 
