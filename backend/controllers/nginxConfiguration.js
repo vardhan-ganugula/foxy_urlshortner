@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const nginxConfigPath = '/'; 
+const nginxConfigPath = '/etc/nginx/sites-available/foxyurl'; 
 const domainExists = (configContent, domain) => {
     const serverNameRegex = new RegExp(`server_name[\\s\\S]*${domain}[\\s;]`, 'g');
     return serverNameRegex.test(configContent);
