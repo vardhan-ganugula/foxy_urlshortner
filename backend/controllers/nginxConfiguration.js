@@ -5,6 +5,7 @@ const domainExists = (configContent, domain) => {
     const serverNameRegex = new RegExp(`server_name[\\s\\S]*${domain}[\\s;]`, 'g');
     return serverNameRegex.test(configContent);
 };
+// added directory and file path
 const addDomain = (newDomain) => {
     fs.readFile(nginxConfigPath, 'utf8', (err, data) => {
         let message = '';
