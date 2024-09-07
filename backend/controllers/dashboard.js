@@ -272,7 +272,7 @@ async function addDomainToNginx(req, res) {
           if (domainStatus) {
             const result = User.findOneAndUpdate(
               { _id: userId },
-              { $addToSet: { domains: newDomain } },
+              { $addToSet: { domains: domain } },
               { new: true }
             );
 
