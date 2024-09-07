@@ -215,62 +215,53 @@ async function checkDnsRecords(req, res) {
 async function addDomainToNginx(req, res) {
   const domain = req.query.addr;
   const userId = req.query.id;
-  if(!domain || !userId){
+  
+  if (!domain || !userId) {
     return res.json({
       status: "failed",
-      msg : "userId and domain is required"
+      msg: "userId and domain are required"
     });
   }
-  try{
+  
+  try {
     const allDomains = await User.findById(userId, "domains");
-    if(!allDomains){
+    
+    if (!allDomains) {
       return res.json({
-        status: "no user or domains found",
-      })
-    }
-
-    if(!allDomains.domains.includes(domain)){
-      return res.json({
-        status : "failed",
-        msg : "not a valid domain"
+        status: "failed",
+        msg: "No user or domains found"
       });
     }
-
     
-  }catch(e){
-    return res.json({
-      status: "failed",
-      msg : "user not found"
-    })
-  }
-  try {
-    const domainPattern =
-      /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z0-9-]{1,63}(?<!-))*\.[A-Za-z]{2,}$/;
-
+    if (!allDomains.domains.includes(domain)) {
+      return res.json({
+        status: "failed",
+        msg: "Not a valid domain"
+      });
+    }
+    
+    const domainPattern = /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z0-9-]{1,63}(?<!-))*\.[A-Za-z]{2,}$/;
     const isValidDomain = (domain) => domainPattern.test(domain);
-
+    
     if (isValidDomain(domain)) {
-      exec(
-        `node ./controllers/nginxConfiguration.js ${domain}> output.txt`,
-        (err, stdout, stderr) => {
+      exec(`node ./controllers/nginxConfiguration.js ${domain}> output.txt`, async (err, stdout, stderr) => {
+        if (err) {
+          return res.json({
+            status: "failed",
+            msg: err.message
+          });
+        }
+
+        fs.readFile('output.txt', 'utf8', async (err, data) => {
           if (err) {
             return res.json({
               status: "failed",
-              msg: err.message,
+              msg: "Something went wrong while reading the output file"
             });
           }
-          let domainStatus = false;
-          fs.readFile("output.txt", "utf8", (err, data) => {
-            if (err) {
-              return res.json({
-                status: "failed",
-                msg: "Something went wrong while reading the output file",
-              });
-            }
-            domainStatus = true;
-          });
-          if (domainStatus) {
-            const result = User.findOneAndUpdate(
+
+          try {
+            const result = await User.findOneAndUpdate(
               { _id: userId },
               { $addToSet: { domains: domain } },
               { new: true }
@@ -279,30 +270,35 @@ async function addDomainToNginx(req, res) {
             if (!result) {
               return res.json({
                 status: "failed",
-                msg: "user not found",
-              });
-            } else {
-              return res.json({
-                status: "success",
-                msg: "Domain added successfully",
-                output: data,
+                msg: "User not found"
               });
             }
+
+            return res.json({
+              status: "success",
+              msg: "Domain added successfully",
+              output: data
+            });
+          } catch (e) {
+            return res.json({
+              status: "failed",
+              msg: "Error while updating user domain"
+            });
           }
-        }
-      );
+        });
+      });
     } else {
       return res.json({
         status: "failed",
-        msg: "Not a valid domain",
+        msg: "Not a valid domain"
       });
     }
   } catch (e) {
     return res.json({
       status: "failed",
-      msg : "unknown error",
-      error: toString(e)
-    })
+      msg: "Unknown error occurred",
+      error: e.toString()
+    });
   }
 }
 module.exports = {
