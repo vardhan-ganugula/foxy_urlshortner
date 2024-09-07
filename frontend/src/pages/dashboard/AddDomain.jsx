@@ -6,12 +6,15 @@ import { useProfile } from "../../contexts/ProfileProvider";
 import CheckLogin from "../../../utils/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import ProfileDetails from "../../components/ProfileDetails";
-import {toast} from 'react-toastify'
+import { toast } from "react-toastify";
+import Cookies from "universal-cookie";
+const userId = new Cookies().get("userId");
+const token = new Cookies().get("token");
 function AddDomain() {
   let { loading } = useDetails();
   let { gotDetails } = useProfile();
   let navigate = useNavigate();
-  let [domain, setDomain] = useState('');
+  let [domain, setDomain] = useState("");
   useEffect(() => {
     if (!CheckLogin()) {
       navigate("/login");
@@ -19,23 +22,59 @@ function AddDomain() {
     }
   }, [navigate]);
   if (!gotDetails) return <> page not found</>;
-  const  checkForRecord = async (e) => {
+  const checkForRecord = async (e) => {
     e.preventDefault();
-    try{
-      const resp = await fetch(import.meta.env.VITE_SERVER + `/dashboard/lookup?addr=${domain}`)
+    try {
+      const resp = await fetch(
+        import.meta.env.VITE_SERVER +
+          `/dashboard/lookup?addr=${domain}&userId=${userId}`,
+        {
+          method: "GET",
+          headers: {
+            authorization: "Bearer " + token,
+            "Content-type": "application/json",
+          },
+        }
+      );
       const response = await resp.json();
-      if(response.status === 'success'){
-        toast.success('domain verified successfully')
-      }else{
-        toast.error(response.msg)
+      if (response.status === "success") {
+        toast.success("domain added successfully");
+      } else {
+        toast.error(response.msg);
       }
-    }catch(e){
-      console.error(e)
+    } catch (e) {
+      console.error(e);
     }
   };
+  const configureDomain = async (e) => {
+    e.preventDefault();
+    try {
+      const resp = await fetch(
+        import.meta.env.VITE_SERVER +
+          `/dashboard/addDomain?addr=${domain}&id=${userId}`,
+        {
+          method: "GET",
+          headers: {
+            authorization: "Bearer " + token,
+            "Content-type": "application/json",
+          },
+        }
+      );
+      const response = await resp.json();
+      if (response.status === "success") {
+        toast.success("domain added successfully");
+      } else {
+        toast.error(response.msg);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+  };
+
   const handleSSL = (e) => {
     e.preventDefault();
-    toast.error("This option will be available soon")
+    toast.error("This option will be available soon");
   };
   return (
     <div className="w-screen h-screen overflow-hidden bg-zinc-900 flex ">
@@ -53,7 +92,6 @@ function AddDomain() {
                   please add a A record in your domain provider
                 </p>
                 <details className="w-full bg-white rounded">
-                  
                   <summary className="bg-yellow-500 p-3 rounded text-black cursor-pointer">
                     How to Add <strong>"A"</strong> record
                   </summary>
@@ -88,7 +126,8 @@ function AddDomain() {
                           <li>Choose "A" as the record type.</li>
                           <li>Name: Enter the subdomain (@).</li>
                           <li>
-                            IP Address: <strong>{import.meta.env.VITE_BASE_IP} </strong>
+                            IP Address:{" "}
+                            <strong>{import.meta.env.VITE_BASE_IP} </strong>
                           </li>
                           <li>TTL: Leave as default or set to 1 hour.</li>
                         </ul>
@@ -109,7 +148,15 @@ function AddDomain() {
                         </ul>
                       </li>
                       <li className="py-5 mb-5">
-                        <span className="bg-red-500 text-white p-2 rounded">NOTE :</span> <span className="ml-3">if you are using cloudflare, please turn off <strong className="underline decoration-wavy decoration-red-500 underline-offset-2">proxy status</strong></span>
+                        <span className="bg-red-500 text-white p-2 rounded">
+                          NOTE :
+                        </span>{" "}
+                        <span className="ml-3">
+                          if you are using cloudflare, please turn off{" "}
+                          <strong className="underline decoration-wavy decoration-red-500 underline-offset-2">
+                            proxy status
+                          </strong>
+                        </span>
                       </li>
                     </ol>
                   </div>
@@ -118,12 +165,37 @@ function AddDomain() {
                   <h2 className="font-bold text-3xl">
                     Check <span className="text-teal-500">Status</span>
                   </h2>
-                  <form onSubmit={checkForRecord} className="px-5" autoComplete="off">
+                  <form className="px-5" autoComplete="off">
                     <div className="mt-5 flex flex-col">
-                      <label htmlFor="domainName" className="font-mono text-md mb-2">Enter your Domain</label>
-                      <input type="text" id="domainName" className="bg-black border-white border rounded px-4 py-2 outline-none md:w-2/5 w-full" required value={domain} onChange={e => setDomain(e.target.value)}/>
+                      <label
+                        htmlFor="domainName"
+                        className="font-mono text-md mb-2"
+                      >
+                        Enter your Domain
+                      </label>
+                      <input
+                        type="text"
+                        id="domainName"
+                        className="bg-black border-white border rounded px-4 py-2 outline-none md:w-2/5 w-full"
+                        required
+                        value={domain}
+                        onChange={(e) => setDomain(e.target.value)}
+                      />
                     </div>
-                    <button type="submit" className="mt-5 px-5 py-2 bg-teal-500 rounded">submit</button>
+                    <div className="flex gap-3">
+                      <button
+                        className="mt-5 px-5 py-2 bg-teal-500 rounded"
+                        onClick={checkForRecord}
+                      >
+                        submit
+                      </button>
+                      <button
+                        className="mt-5 px-5 py-2 bg-yellow-500 rounded"
+                        onClick={configureDomain}
+                      >
+                        Register
+                      </button>
+                    </div>
                   </form>
                 </div>
 
@@ -131,12 +203,33 @@ function AddDomain() {
                   <h2 className="font-bold text-3xl">
                     Order <span className="text-indigo-500">SSL</span>
                   </h2>
-                  <form onSubmit={handleSSL} className="px-5" autoComplete="off">
+                  <form
+                    onSubmit={handleSSL}
+                    className="px-5"
+                    autoComplete="off"
+                  >
                     <div className="mt-5 flex flex-col">
-                      <label htmlFor="sslDomainName" className="font-mono text-md mb-2">Enter your Domain</label>
-                      <input type="text" id="sslDomainName" className="bg-black border-white border rounded px-4 py-2 outline-none w-full md:w-2/5" required value={domain} disabled/>
+                      <label
+                        htmlFor="sslDomainName"
+                        className="font-mono text-md mb-2"
+                      >
+                        Enter your Domain
+                      </label>
+                      <input
+                        type="text"
+                        id="sslDomainName"
+                        className="bg-black border-white border rounded px-4 py-2 outline-none w-full md:w-2/5"
+                        required
+                        value={domain}
+                        disabled
+                      />
                     </div>
-                    <button type="submit" className="mt-5 px-5 py-2 bg-indigo-500 rounded">submit</button>
+                    <button
+                      type="submit"
+                      className="mt-5 px-5 py-2 bg-indigo-500 rounded"
+                    >
+                      submit
+                    </button>
                   </form>
                 </div>
               </div>

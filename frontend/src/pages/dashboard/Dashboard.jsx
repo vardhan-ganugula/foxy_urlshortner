@@ -14,7 +14,7 @@ function Dashboard() {
     tableData,
     loading,
   } = useDetails();
-
+  console.log(tableData)
   useEffect(() => {
     if (!CheckLogin()) {
       navigate("/login");

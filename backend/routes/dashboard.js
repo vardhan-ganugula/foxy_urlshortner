@@ -10,8 +10,8 @@ const {validateUser} = require('../middlewares/dashboard')
 
 dashboardRouter.get('/',validateUser, handleHome);
 dashboardRouter.post('/create_url', validateUser, handleCreteURL)
-dashboardRouter.get('/lookup', checkDnsRecords)
-dashboardRouter.get('/addDomain', addDomainToNginx)
+dashboardRouter.get('/lookup',validateUser, checkDnsRecords)
+dashboardRouter.get('/addDomain',validateUser, addDomainToNginx)
 
 
 
