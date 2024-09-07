@@ -179,18 +179,18 @@ async function handleCreteURL(req, res) {
 
 async function checkDnsRecords(req, res) {
   const hostname = req.query.addr;
-  if (!hostname) {
+  const userId = req.query.userId;
+  if ( !hostname || !userId) {
     return res.json({
       status: "failed",
-      msg: "address required",
+      msg: "address and Id required",
     });
-    return;
   }
   const options = {
     family: 4,
     hints: dns.ADDRCONFIG | dns.V4MAPPED,
   };
-  dns.lookup(hostname, options, (err, addr, family) => {
+  dns.lookup(hostname, options, async (err, addr, family) => {
     if (err) {
       return res.json({
         status: "failed",
@@ -199,16 +199,39 @@ async function checkDnsRecords(req, res) {
       });
     }
     if (addr === process.env.BASE_IP) {
-      return res.json({
-        status: "success",
-        msg: "address configured successfully",
-      });
+      try {
+        const result = await User.findOneAndUpdate(
+          { _id: userId },
+          { $addToSet: { domains: hostname } },
+          { new: true }
+        );
+
+        if (!result) {
+          return res.json({
+            status: "failed",
+            msg: "User not found"
+          });
+        }
+
+        return res.json({
+          status: "success",
+          msg: "Domain added successfully",
+        });
+      } catch (e) {
+        console.log(e)
+        return res.json({
+          status: "failed",
+          msg: "Error while updating user domain"
+        });
+      }
     } else {
       return res.json({
         status: "failed",
         msg: "address is not configured",
       });
     }
+
+    
   });
 }
 
@@ -260,31 +283,11 @@ async function addDomainToNginx(req, res) {
             });
           }
 
-          try {
-            const result = await User.findOneAndUpdate(
-              { _id: userId },
-              { $addToSet: { domains: domain } },
-              { new: true }
-            );
-
-            if (!result) {
-              return res.json({
-                status: "failed",
-                msg: "User not found"
-              });
-            }
-
-            return res.json({
-              status: "success",
-              msg: "Domain added successfully",
-              output: data
-            });
-          } catch (e) {
-            return res.json({
-              status: "failed",
-              msg: "Error while updating user domain"
-            });
-          }
+          return res.json({
+            status: "success",
+            msg: data,
+          })
+          
         });
       });
     } else {
