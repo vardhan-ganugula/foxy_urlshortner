@@ -7,7 +7,6 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CreateUrl from "./pages/dashboard/CreateUrl";
-import AddDomain from "./pages/dashboard/AddDomain";
 import Logout from "./pages/Logout";
 function App() {
   return (
@@ -18,7 +17,6 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create-url" element={<CreateUrl />} />
-          <Route path="/add-domain" element={<AddDomain />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:id" element={<ResetPassword />} />
           <Route path="/logout" element={<Logout />} />

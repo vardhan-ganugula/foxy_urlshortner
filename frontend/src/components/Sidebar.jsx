@@ -37,14 +37,7 @@ function Sidebar() {
                 <BiHomeAlt size={20} /> <span> Dashboard</span>
               </NavLink>
             </div>
-            <div className="sidebar_item">
-              <NavLink
-                to="/add-domain"
-                className="bg-zinc-800/80 text-white w-full flex text-center py-2 gap-2 px-3 rounded-lg "
-              >
-                <FaGlobeAfrica size={20} /> <span> Add Domain</span>
-              </NavLink>
-            </div>
+            
             <div className="sidebar_item">
               <NavLink
                 to="/create-url"
