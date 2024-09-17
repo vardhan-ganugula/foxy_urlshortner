@@ -38,7 +38,6 @@ async function handleCreateURL(req, res) {
 }
 
 async function handleUrlForward(req, res) {
-  console.log('entered')
   const id = req.params.id;
   const xForwardedFor = req.headers["x-forwarded-for"];
   const ip = xForwardedFor? xForwardedFor.split(",")[0]: req.connection.remoteAddress;
@@ -51,13 +50,12 @@ async function handleUrlForward(req, res) {
       device: device,
     };
     const response = await URL.findOneAndUpdate(
-      { url: req.headers.host + "/" + id },
+      { shortId: id },
       { $inc: { [deviceName]: 1 },
         $push: { viewHistory: record } 
       },
       { new: true }
     );
-    console.log(response);
     if (response.redirectUrl) res.redirect(response.redirectUrl);
     else res.redirect(process.env.ERROR_PAGE);
   } catch (e) {

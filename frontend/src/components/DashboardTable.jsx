@@ -25,7 +25,7 @@ function DashboardTable({ tableData }) {
             </h4>
 
             <div className="flex justify-between flex-grow pr-5 items-center">
-              <div className="flex gap-1 items-center text-xs rounded-lg bg-violet-200 border-violet-800 py-1 px-2 text-violet-800 ">
+              <div className="flex gap-1 items-center text-xs rounded-lg bg-violet-200 border-violet-800 py-1 px-2 text-violet-800 md:block hidden">
                 <GoDotFill size={6} /> new
               </div>
               <div>
