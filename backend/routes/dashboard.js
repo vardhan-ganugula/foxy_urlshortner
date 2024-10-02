@@ -11,6 +11,6 @@ const {validateUser} = require('../middlewares/dashboard')
 dashboardRouter.get('/',validateUser, handleHome);
 dashboardRouter.post('/create_url', validateUser, handleCreteURL)
 
-dashboardRouter.post('/analytics/:id', handleAnalytics)
+dashboardRouter.get('/analytics', handleAnalytics)
 
 module.exports=dashboardRouter;

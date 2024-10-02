@@ -68,12 +68,11 @@ async function handleUrlForward(req, res) {
 }
 
 async function handleAnalytics(req, res) {
-  const shortId = req.body.id;
-  const domain = req.body.domain;
-  console.log(shortId, domain);
-  const result = await URL.findOne({ shortId, domain });
+  const shortId = req.query.id;
+  console.log(shortId)
+  const result = await URL.findOne({ shortId },{ "devices.mobile": 1, "devices.tablet": 1, "devices.desktop": 1, _id: 0 });
   res.json({
-    result,
+    devices : result["devices"],
   });
 }
 
