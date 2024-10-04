@@ -11,7 +11,7 @@ function Main() {
   const [url, setUrl] = useState("");
   const [alias, setAlias] = useState("");
   const [shortUrl, setShortUrl] = useState("");
-  const [domain, setDomain] = useState("foxyurl.vercel.app");
+  const [domain, setDomain] = useState(import.meta.env.VITE_BACKURL);
   const [alert, setAlert] = useState({ type: "", data: "", visible: false });
   useEffect(() => {
     let parentDiv = document.querySelector("#parentDiv");
