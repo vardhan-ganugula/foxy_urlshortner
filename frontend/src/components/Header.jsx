@@ -19,7 +19,7 @@ function Header({hideAlert = false, navlinks, hideLogins = false}) {
           <IoIosClose size={25}/>
         </div>
           <div className='px-2'>
-            <h6> Create a free acount and enjoy extra features -  <strong> <span className='text-indigo-600'> ip tracing </span>, <span className='text-orange-500'>custom domain</span></strong> </h6>
+            <h6> Create a free acount and enjoy extra features -  <strong> <span className='text-indigo-600'> ip tracing </span>, <span className='text-orange-500'>location</span></strong> </h6>
           </div>
       </div>}
       <nav className='flex justify-between items-center'>
