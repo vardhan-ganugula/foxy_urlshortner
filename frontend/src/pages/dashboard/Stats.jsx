@@ -50,7 +50,7 @@ function Stats() {
       <div className="w-screen h-screen overflow-hidden bg-zinc-900 flex ">
         <Sidebar />
         <div className="flex-grow bg-black text-white p-5 h-full w-auto overflow-y-auto ">
-          <DashboardTopBar name="Dashboard" />
+          <DashboardTopBar name="Stats" />
           <div id="main_area">
             <div id="chart_area" className="flex gap-2 flex-col md:flex-row items-center">
               <DevicePieChart  data={statsData} />
