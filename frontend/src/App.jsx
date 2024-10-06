@@ -8,6 +8,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CreateUrl from "./pages/dashboard/CreateUrl";
 import Logout from "./pages/Logout";
+import Stats from "./pages/dashboard/Stats";
 import DevicePieChart from "./components/DevicePieChart";
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/reset-password/:id" element={<ResetPassword />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/test" element={<DevicePieChart />} />
+          <Route path="/stats/:id" element={<Stats />} />
         </Routes>
 
     </>

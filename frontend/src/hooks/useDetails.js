@@ -2,10 +2,8 @@ import React, { useEffect } from "react";
 import Cookies from "universal-cookie";
 import { useProfile } from "../contexts/ProfileProvider";
 import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
 function useDetails() {
- 
   const location = useLocation();
   const {
     data,
@@ -34,7 +32,7 @@ function useDetails() {
       })
         .then((resp) => resp.json())
         .then((resp) => {
-          if (resp.dashboardData.length > 0) {
+          if (resp && resp.dashboardData && resp.dashboardData.length > 0) {
             setData(resp.dashboardData);
           }
           if (resp.urlData) setTableData(resp.urlData);

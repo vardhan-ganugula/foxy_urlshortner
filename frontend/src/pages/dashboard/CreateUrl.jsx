@@ -20,7 +20,7 @@ function CreateUrl() {
   let { loading } = useDetails();
   let { upDatedetails, domains} = useProfile();
   let [output, setOutput] = useState("");
-  const [domain, setDomain] = useState("ul.techessayist.ninja")
+  const [domain, setDomain] = useState(import.meta.env.VITE_BACKURL)
   const [url, setUrl] = useState("")
   const [shortCode, setShortcode] = useState("")
   const userId = new Cookies().get("userId");

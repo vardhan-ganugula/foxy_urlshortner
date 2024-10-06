@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { format } from "date-fns";
 import { GoDotFill } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 function DashboardTable({ tableData }) {
   const searchFilterValue = useRef("");
@@ -25,7 +26,7 @@ function DashboardTable({ tableData }) {
             </h4>
 
             <div className="flex justify-between flex-grow pr-5 items-center">
-              <div className="flex gap-1 items-center text-xs rounded-lg bg-violet-200 border-violet-800 py-1 px-2 text-violet-800 md:block hidden">
+              <div className="hidden gap-1  text-xs rounded-lg bg-violet-200 border-violet-800 py-1 px-2 text-violet-800 md:flex md:items-center ">
                 <GoDotFill size={6} /> new
               </div>
               <div>
@@ -59,8 +60,8 @@ function DashboardTable({ tableData }) {
                     <tr
                       className={`border-b-2 border-gray-700 hover:bg-zinc-900/50 cursor-pointer ${(i%2==1)? 'bg-zinc-900/50' : ''}`}
                       key={tuple._id}
-                    >
-                      <td className="p-2">{tuple._id}</td>
+                    > 
+                      <td className="p-2"><Link to={"/stats/" + tuple._id}>{tuple._id}</Link></td>
                       <td className="p-2 w-auto text-ellipsis overflow-hidden block">
                         {tuple.domain}
                       </td>

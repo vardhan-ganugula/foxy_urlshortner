@@ -1,44 +1,40 @@
-import React, { useEffect } from 'react'
-import { PieChart, Tooltip, ResponsiveContainer, Pie, Cell } from 'recharts'
+import React, { useEffect } from "react";
+import { PieChart, Tooltip, ResponsiveContainer, Pie, Cell } from "recharts";
 
-function DevicePieChart() {
-  useEffect(()=>{
-    fetch(import.meta.VITE_SERVER+'/dashboard/analytics/').then(res => res.json()).then(data => console.log(data)).catch(e => {
-      console.log(e)
-    })
-  }, [])
-  const data = [
-  { name: 'Group A', value: 400 },
-  { name: 'Group B', value: 300 },
-  { name: 'Group C', value: 300 },
-  { name: 'Group D', value: 200 },
-  { name: 'Group E', value: 278 },
-  { name: 'Group F', value: 189 },
-  ]
+function DevicePieChart({ data }) {
+  const COLORS = ['#2ecc71', '#3498db', '#f1c40f'];
   return (
-    <div>
+    <div className="border border-black">
+      <PieChart width={400} height={400}>
+        <Pie dataKey="value" data={data} cx={200} cy={200} fill="#f1c40f" >
 
-
-        <PieChart width={400} height={400}>
-          <Pie dataKey="value" data={data} cx={200} cy={200}  fill="#82ca9d" />
-          <Tooltip content={customToolTip} />
-        </PieChart>
-
+        {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+        </Pie>
+        <Tooltip content={customToolTip} />
+      </PieChart>
     </div>
-  )
+  );
 }
 
-
-function customToolTip({active, payload}){
-  if(active && payload && payload.length){
-    return(<div>
-      <div className='w-auto h-8 bg-black rounded text-white flex items-center justify-center gap-3 px-2 shadow-md shadow-orange-500/50'>
-        <span>Name : </span> <span>{payload[0].name}</span>
+function customToolTip({ active, payload }) {
+  if (active && payload && payload.length) {
+    return (
+      <div>
+        <div className="w-auto p-2 bg-black rounded text-white px-2 ">
+          <div>
+            <span>Name : </span> <span>{payload[0].name}</span>
+          </div>
+          <div>
+            <span>Value : </span> <span>{payload[0].value}</span>
+          </div>
+        </div>
       </div>
-    </div>)
-  }else{
+    );
+  } else {
     return null;
   }
 }
 
-export default DevicePieChart
+export default DevicePieChart;
