@@ -30,7 +30,7 @@ async function handleCreateURL(req, res) {
       url: domain + "/" + shortId,
     });
   } catch (e) {
-    console.log("duplicated");
+
     return res.json({
       status: false,
     });
@@ -59,7 +59,7 @@ async function handleUrlForward(req, res) {
     if (response.redirectUrl) res.redirect(response.redirectUrl);
     else res.redirect(process.env.ERROR_PAGE);
   } catch (e) {
-    console.log(e);
+
     res.status(404).json({
       status: "error",
       data: e.toString(),
@@ -69,11 +69,44 @@ async function handleUrlForward(req, res) {
 
 async function handleAnalytics(req, res) {
   const shortId = req.query.id;
-  console.log(shortId)
   const result = await URL.findOne({ shortId },{ "devices.mobile": 1, "devices.tablet": 1, "devices.desktop": 1, _id: 0 });
-  res.json({
-    devices : result["devices"],
-  });
+  const statsPipeline = [
+    {
+        $match: {
+          shortId
+        }
+    },
+    {
+        $unwind: "$viewHistory"
+    },
+    {
+        $group: {
+          _id: "$viewHistory",
+        }
+    },
+    {
+        $project: {
+          date: "$_id.date",
+          ip:"$_id.ip" ,
+          device:"$_id.device",
+          "_id" : 0
+        }
+    }
+]
+  const statsData = await URL.aggregate(statsPipeline)
+  if(result && statsPipeline){
+    res.json({
+      status: 'success',
+      devices : result["devices"],
+      data : statsData
+    });
+  }else{
+    res.json({
+      status: 'error',
+      msg : 'no result found',
+      devices : [null]
+    })
+  }
 }
 
 module.exports = {

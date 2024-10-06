@@ -12,7 +12,7 @@ const UserSchema = mongoose.Schema({
     },
     domains: {
         type: [String], 
-        default : ['ul.techessayist.ninja']
+        default : ['ul.vardhan.works']
     },
     password: {
         type: String,
