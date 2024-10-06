@@ -65,7 +65,7 @@ function DashboardTable({ tableData }) {
                       <td className="p-2 w-auto text-ellipsis overflow-hidden block">
                         {tuple.domain}
                       </td>
-                      <td className="p-2 text-left">{tuple.url}</td>
+                      <td className="p-2 text-left text-ellipsis whitespace-nowrap overflow-hidden max-w-[70px]">{tuple.url}</td>
                       <td className="p-2">
                         {format(new Date(tuple["createdAt"]), "yyyy-MM-dd")}
                       </td>
