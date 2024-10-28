@@ -5,7 +5,7 @@ export const navlinks = [
     },
     {
       'name': "About",
-      'link': "/about"
+      'link': "https://vardhan.works"
     },
     {
       'name': "Signup",
