@@ -82,8 +82,8 @@ async function handleForgotPassword(req, res) {
 
     if (result) {
       const transporter = nodemailer.createTransport({
-        host: "us2.smtp.mailhostbox.com",
-        port: 587,
+        host: process.env.MAIL_HOST,
+        port: 465,
         secure: false,
         auth: {
           user: process.env.MAIL_ADDR,
