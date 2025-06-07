@@ -1,126 +1,146 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Header from "../components/Header";
 import { MdError } from "react-icons/md";
-import Alert from "../components/Alert";
+import {toast} from "react-toastify";
 import Cookies from "universal-cookie";
 import { Link, useNavigate } from "react-router-dom";
 import { navlinks } from "../../utils";
 
+// Validation utilities
+const validateEmail = (email) => {
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailPattern.test(email);
+};
+
+const validatePassword = (password) => {
+  return password.length > 6;
+};
 
 function Login() {
-  let [email, setEmail] = useState("");
-  let [password, setPassword] = useState("");
-  let [alert, setAlert] = useState({ type: "", data: "", visible: false });
-  let [proceed, isProceed] = useState(false);
-  let cookie = new Cookies();
-  let navigate = useNavigate()
-  function checkEmail() {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const errEmail = document.querySelector("#email-p");
-    if (emailPattern.test(email)) {
-      errEmail.classList.remove("flex");
-      errEmail.classList.add("hidden");
-      proceed = true;
-    } else {
-      errEmail.classList.add("flex");
-      errEmail.classList.remove("hidden");
-      isProceed(false)
-    }
-  }
-  function checkPass() {
-    const errPass = document.querySelector("#password-p");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [errors, setErrors] = useState({
+    email: false,
+    password: false
+  });
 
-    if (password.length > 6) {
-      errPass.classList.remove("flex");
-      errPass.classList.add("hidden");
-      isProceed(true)
-    } else {
-      errPass.classList.add("flex");
-      errPass.classList.remove("hidden");
-      isProceed(false)
-    }
-  }
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const cookie = new Cookies();
+  const navigate = useNavigate();
 
-  function handleLogin(e) {
+  // Memoized validation functions
+  const handleEmailValidation = useCallback(() => {
+    const isValid = validateEmail(formData.email);
+    setErrors(prev => ({ ...prev, email: !isValid }));
+    return isValid;
+  }, [formData.email]);
+
+  const handlePasswordValidation = useCallback(() => {
+    const isValid = validatePassword(formData.password);
+    setErrors(prev => ({ ...prev, password: !isValid }));
+    return isValid;
+  }, [formData.password]);
+
+  // Optimized input handler
+  const handleInputChange = useCallback((field) => (e) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  }, []);
+
+  // Show toast notifications
+  const showToast = useCallback((type, message) => {
+    if (type === "success") {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
+  }, []);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (!proceed ||  !email || !password) {
-      if (alert.visible)
-        document.querySelector("#alertDiv").style.display = "flex";
-      setAlert({ visible: true, data: "fill all the fileds", type: "error" });
+    
+    // Validate all fields
+    const isEmailValid = handleEmailValidation();
+    const isPasswordValid = handlePasswordValidation();
+    
+    if (!isEmailValid || !isPasswordValid || !formData.email || !formData.password) {
+      showToast("error", "Please fill all fields correctly");
       return;
-    } else {
-      fetch(import.meta.env.VITE_SERVER + "/auth/login", {
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SERVER}/auth/login`, {
         method: "POST",
         headers: {
-          "Content-type": "application/json",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data)
-          if (data.status === "success") {
-            if (alert.visible)
-              document.querySelector("#alertDiv").style.display = "flex";
-            setAlert({ type: "success", data: "Login success", visible: true });
+        body: JSON.stringify(formData),
+      });
 
+      const data = await response.json();
 
-          const expiryDate = new Date();
-          expiryDate.setDate(expiryDate.getDate() + 1);
-          cookie.set('token', data.token, { expires: expiryDate });
-          cookie.set('userId' , data.userId, { expires: expiryDate });
-
-          navigate('/dashboard')
-          } else {
-            if (alert.visible)
-              document.querySelector("#alertDiv").style.display = "flex";
-            setAlert({ type: "failed", data: data.msg, visible: true });
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          if (alert.visible)
-            document.querySelector("#alertDiv").style.display = "flex";
-          setAlert({ type: "failed", data: "Login failed", visible: true });
-        });
+      if (data.status === "success") {
+        showToast("success", "Login successful!");
+        
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 1);
+        
+        cookie.set('token', data.token, { expires: expiryDate });
+        cookie.set('userId', data.userId, { expires: expiryDate });
+        
+        setTimeout(() => navigate('/dashboard'), 500);
+      } else {
+        showToast("error", data.msg || "Login failed");
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      showToast("error", "Network error. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <>
       <Header navlinks={navlinks} />
       <main className="w-full h-[85vh] flex items-center justify-center px-3">
-        {alert.visible && <Alert type={alert.type} data={alert.data} />}
-
-        <div className=" w-[400px] rounded shadow-lg overflow-hidden ">
+        <div className="w-[400px] rounded shadow-lg overflow-hidden">
           <h2 className="w-full py-4 bg-orange-500 text-white text-center text-2xl font-bold">
             Login Form
           </h2>
-          <form className="p-4" onSubmit={handleLogin}>
-            <div className="flex gap-2 flex-col mt-5 relative">
+          
+          <form className="p-4" onSubmit={handleLogin} noValidate>
+            {/* Email Field */}
+            <div className="flex gap-2 flex-col mt-5">
               <label htmlFor="email" className="ml-1 font-semibold">
                 Email Address
               </label>
               <input
                 type="email"
                 id="email"
-                className="px-3 py-2 border-2 border-orange-300 rounded outline-none font-mono"
+                className={`px-3 py-2 border-2 rounded outline-none font-mono transition-colors ${
+                  errors.email ? 'border-red-300' : 'border-orange-300'
+                }`}
                 placeholder="name@email.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-                onBlur={checkEmail}
+                value={formData.email}
+                onChange={handleInputChange('email')}
+                onBlur={handleEmailValidation}
+                disabled={isLoading}
+                required
               />
-              <p className="text-xs text-red-500 gap-2 hidden" id="email-p">
-                {" "}
-                <MdError size={15} />
-                please enter valid email
-              </p>
+              {errors.email && (
+                <p className="text-xs text-red-500 flex items-center gap-2">
+                  <MdError size={15} />
+                  Please enter a valid email
+                </p>
+              )}
             </div>
+
+            {/* Password Field */}
             <div className="flex gap-2 flex-col mt-5">
               <label htmlFor="password" className="ml-1 font-semibold">
                 Password
@@ -128,26 +148,42 @@ function Login() {
               <input
                 type="password"
                 id="password"
-                className="px-3 py-2 border-2 border-orange-300 rounded outline-none font-mono"
-                placeholder="enter the password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={checkPass}
+                className={`px-3 py-2 border-2 rounded outline-none font-mono transition-colors ${
+                  errors.password ? 'border-red-300' : 'border-orange-300'
+                }`}
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleInputChange('password')}
+                onBlur={handlePasswordValidation}
+                disabled={isLoading}
+                required
               />
-              <p className="text-xs text-red-500 hidden gap-2" id="password-p">
-                {" "}
-                <MdError size={15} />
-                please choose a strong password
-              </p>
+              {errors.password && (
+                <p className="text-xs text-red-500 flex items-center gap-2">
+                  <MdError size={15} />
+                  Password must be longer than 6 characters
+                </p>
+              )}
             </div>
+
+            {/* Forgot Password Link */}
             <div className="text-sm mt-3 ml-2">
-                Forgot Password ? Click <Link to={'/forgot-password'} className=' decoration-wavy underline decoration-orange-500 underline-offset-2'>here</Link>
+              Forgot Password?{" "}
+              <Link 
+                to="/forgot-password" 
+                className="decoration-wavy underline decoration-orange-500 underline-offset-2 hover:text-orange-600 transition-colors"
+              >
+                Click here
+              </Link>
             </div>
+
+            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3 rounded mt-5 font-semibold bg-orange-500 text-white"
+              disabled={isLoading}
+              className="w-full py-3 rounded mt-5 font-semibold bg-orange-500 text-white hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed transition-colors"
             >
-              Login
+              {isLoading ? "Logging in..." : "Login"}
             </button>
           </form>
         </div>
