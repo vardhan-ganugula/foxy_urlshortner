@@ -33,4 +33,5 @@ dist-ssr
 nginx
 nginxTemplate.js
 *.mongodb.js
-*.temp
+*.temp 
+/frontend/dist
