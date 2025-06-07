@@ -16,14 +16,14 @@ async function handleCreateUser(req, res) {
       email,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       status: "success",
       userId: userResponse._id,
       msg: "successfully created user",
     });
   } catch (e) {
     console.log(e);
-    res.status(401).json({
+    return res.status(401).json({
       status: "failed",
       msg: "failed to create user, maybe user exists",
     });
@@ -37,7 +37,6 @@ async function handleSignIn(req, res) {
       status: "failed",
       msg: "email or password required",
     });
-  console.log("entered");
 
   User.findOne({
     password,
@@ -58,7 +57,13 @@ async function handleSignIn(req, res) {
         secret,
         { expiresIn: "1d" }
       );
-      res.json({
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict',
+        maxAge: 24 * 60 * 60 * 1000, 
+      });
+      return res.json({
         status: "success",
         userId: data._id,
         token: token,
